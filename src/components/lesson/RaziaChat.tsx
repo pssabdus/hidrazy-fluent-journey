@@ -20,9 +20,13 @@ export function RaziaAvatar({ isThinking, isSpeaking, emotion = 'neutral' }: Raz
       encouraging: '🌟',
       thinking: '🤔',
       excited: '🎉',
-      corrective: '💡'
+      corrective: '💡',
+      warm: '🤗',
+      celebrating: '🎊',
+      listening: '👂',
+      speaking: '💬'
     };
-    setCurrentExpression(expressions[emotion]);
+    setCurrentExpression(expressions[emotion] || expressions.neutral);
   }, [emotion]);
 
   return (

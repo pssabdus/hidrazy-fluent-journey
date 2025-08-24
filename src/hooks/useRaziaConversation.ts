@@ -82,15 +82,9 @@ export function useRaziaConversation(initialContext: Partial<ConversationContext
       }
     }));
 
-    // Generate initial greeting
-    const greeting = await generateRaziaResponse('Hello! I\'m excited to practice English with you today!', {
-      includeCorrections: false,
-      includeEncouragement: true,
-      includeCulturalContext: false,
-      adaptLanguageLevel: true,
-      responseStyle: 'conversational',
-      maxResponseLength: 150
-    });
+    // Get personalized greeting based on user level and conversation type
+    const userLevel = state.context.currentLevel || 'intermediate';
+    const greeting = getPersonalizedGreeting(userLevel, type);
 
     addMessage({
       id: `razia-${Date.now()}`,
@@ -371,4 +365,33 @@ export function useRaziaConversation(initialContext: Partial<ConversationContext
       saveConversation
     }
   };
+}
+
+// Helper function to get personalized greetings based on user level and conversation type
+function getPersonalizedGreeting(userLevel: string, conversationType: string): string {
+  const greetings = {
+    beginner: {
+      'free-chat': "Ahlan, habibi! 😊 How are you today? I'm so excited to practice English with you! Tell me - did you have a good morning? Maybe you had some qahwa (coffee) or chai?",
+      'lesson_practice': "Marhaba, my new friend! 🎉 I'm Razia, and I'm absolutely thrilled to be your English conversation partner! You know what? Learning English as an Arabic speaker is actually a superpower - you'll be trilingual or more! That's amazing, mashallah!",
+      'role_play': "Ahlan wa sahlan! Welcome, my friend! 😊 I'm Razia, and I'm here to make learning English fun and natural. Today we're going to practice real-life situations. Don't worry about making mistakes - there are no stupid mistakes here, only learning moments!",
+      'business_english': "Marhaba! Welcome to business English practice with Razia! 💼 You know what's amazing? You're building professional skills in multiple languages - that's incredibly valuable, mashallah!",
+      'ielts_practice': "Ahlan, future IELTS champion! 🎯 I'm Razia, and I'm here to help you succeed. Remember - you already speak Arabic beautifully, now we're just adding English to your amazing skills!"
+    },
+    intermediate: {
+      'free-chat': "Hey there, my friend! 🌟 I've been looking forward to our chat today! What's been happening in your world? Any interesting stories to share? You know I love hearing about your day!",
+      'lesson_practice': "Marhaba! Ready for another exciting English adventure? I love seeing your progress - you're getting stronger every day, mashallah! What would you like to practice today?",
+      'role_play': "Ahlan! Ready for some fun role-playing? 🎭 I love how confident you're becoming with English! Today let's practice real situations you might encounter. Which scenario interests you most?",
+      'business_english': "Hello, my professional friend! 💼 Your English skills are really developing well, mashallah! Today let's work on more advanced business communication. What workplace situation would you like to practice?",
+      'ielts_practice': "Welcome back, IELTS warrior! 🎯 I can see your improvement from our last sessions - your fluency is really growing! Ready to tackle some challenging practice today?"
+    },
+    advanced: {
+      'free-chat': "Welcome back! I was just thinking about our last conversation. How did that situation work out? I'm curious to hear your thoughts, and of course, practice some more English together! 💪",
+      'lesson_practice': "Ahlan! Look at you - such sophisticated English now! I'm genuinely impressed by your progress, mashallah! 🌟 Today let's explore some nuanced language concepts. What interests you most?",
+      'role_play': "Hello, English expert! 🎭 Your language skills have become so natural and fluent - it's beautiful to see! Today let's challenge ourselves with complex scenarios. What would you like to master?",
+      'business_english': "Greetings, business professional! 💼 Your command of business English is becoming quite impressive, mashallah! Let's work on executive-level communication today. What industry topics fascinate you?",
+      'ielts_practice': "Welcome, IELTS master in training! 🎯 Your sophisticated vocabulary and natural flow are excellent! Today let's polish those final details for band 8+ performance. Ready for the challenge?"
+    }
+  };
+
+  return greetings[userLevel]?.[conversationType] || greetings.intermediate['free-chat'];
 }

@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Mic, MicOff, Send, Volume2, VolumeX, Phone } from 'lucide-react';
 import { useConversation } from '@/contexts/ConversationContext';
 import VoiceInterface from './VoiceInterface';
+import { RaziaWelcomeMessage } from './RaziaWelcomeMessage';
 
 interface RaziaConversationInterfaceProps {
   conversationType?: string;
@@ -73,13 +74,14 @@ export function RaziaConversationInterface({
       {/* Header */}
       <div className="flex items-center justify-between p-6 border-b border-border">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-            <span className="text-white font-bold text-lg">R</span>
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center shadow-lg">
+            <span className="text-2xl">👩‍🏫</span>
           </div>
           <div>
             <h2 className="text-2xl font-bold text-foreground">
-              Practice with Razia
+              Chat with Razia 😊
             </h2>
+            <p className="text-sm text-muted-foreground">Your warm English conversation partner</p>
             {isActive && (
               <Badge variant="secondary" className="mt-1">
                 {currentTopic}
@@ -120,11 +122,18 @@ export function RaziaConversationInterface({
             <div className="flex-1 flex flex-col">
               {/* Messages Area */}
               <div className="flex-1 min-h-[400px] overflow-hidden">
-                <div className="h-full overflow-y-auto space-y-4">
+                <div className="h-full overflow-y-auto space-y-4 p-4">
                   {messages.length === 0 && !isActive ? (
-                    <div className="text-center text-muted-foreground py-12">
-                      <p className="text-lg mb-4">Ready to practice English with Razia?</p>
-                      <p className="text-sm">Click "Start Practice" to begin your conversation!</p>
+                    <div className="space-y-6">
+                      <RaziaWelcomeMessage 
+                        conversationType={conversationType}
+                        userLevel="intermediate"
+                        userName="habibi"
+                      />
+                      <div className="text-center text-muted-foreground">
+                        <p className="text-lg mb-4">Ready to practice English with Razia? 🌟</p>
+                        <p className="text-sm">Click "Start Practice" to begin your warm conversation!</p>
+                      </div>
                     </div>
                   ) : (
                     messages.map((message) => (
