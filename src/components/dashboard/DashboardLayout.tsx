@@ -8,6 +8,9 @@ import { GeneralEnglishDashboard } from './dashboards/GeneralEnglishDashboard';
 import { IELTSDashboard } from './dashboards/IELTSDashboard';
 import { BusinessEnglishDashboard } from './dashboards/BusinessEnglishDashboard';
 import { TravelEnglishDashboard } from './dashboards/TravelEnglishDashboard';
+import { RolePlayHub } from '../roleplay/RolePlayHub';
+import { RolePlayInterface } from '../roleplay/RolePlayInterface';
+import { Scenario } from '@/types/roleplay';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -24,6 +27,8 @@ type TabType = 'home' | 'journey' | 'roleplay' | 'ielts' | 'profile';
 export function DashboardLayout() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>('home');
+  const [selectedScenario, setSelectedScenario] = useState<Scenario | null>(null);
+  const [isInRolePlay, setIsInRolePlay] = useState(false);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [streak, setStreak] = useState(7); // Mock data
