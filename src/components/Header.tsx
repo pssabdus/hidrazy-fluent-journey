@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Menu, X, Globe } from 'lucide-react';
 import { Button } from './ui/button';
 import arabicAccent from '@/assets/arabic-accent.png';
@@ -44,16 +45,18 @@ const Header = () => {
 
             {/* Auth Buttons */}
             <Button 
+              asChild
               variant="outline" 
               className="border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300"
             >
-              Sign In
+              <Link to="/login">Sign In</Link>
             </Button>
             
             <Button 
+              asChild
               className="btn-hero animate-scale-in"
             >
-              Get Started
+              <Link to="/register">Get Started</Link>
             </Button>
           </div>
 
@@ -83,14 +86,15 @@ const Header = () => {
               </Button>
               
               <Button 
+                asChild
                 variant="outline" 
                 className="w-full border-primary text-primary"
               >
-                Sign In
+                <Link to="/login">Sign In</Link>
               </Button>
               
-              <Button className="w-full btn-hero">
-                Get Started
+              <Button asChild className="w-full btn-hero">
+                <Link to="/register">Get Started</Link>
               </Button>
             </div>
           </div>
