@@ -138,7 +138,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.setItem('hidrazy_remember_me', 'true');
       }
 
-      window.location.href = '/';
+      // Check if user needs onboarding
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('onboarding_completed')
+        .eq('id', data.user.id)
+        .single();
+
+      if (!userError && userData && !userData.onboarding_completed) {
+        // New user needs onboarding
+        window.location.href = '/onboarding';
+      } else {
+        // Existing user goes to home
+        window.location.href = '/';
+      }
       return { error: null };
     } catch (error: any) {
       incrementAttempts();
@@ -195,13 +208,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         setState(prev => ({
           ...prev,
           session,
           user: session?.user ?? null,
           loading: false
         }));
+
+        // Handle email confirmation and first-time login
+        if (event === 'SIGNED_IN' && session?.user) {
+          // Defer the check to avoid potential conflicts
+          setTimeout(async () => {
+            const { data: userData, error: userError } = await supabase
+              .from('users')
+              .select('onboarding_completed')
+              .eq('id', session.user.id)
+              .single();
+
+            // Only redirect if we're on the home page and user needs onboarding
+            if (!userError && userData && !userData.onboarding_completed && window.location.pathname === '/') {
+              window.location.href = '/onboarding';
+            }
+          }, 100);
+        }
       }
     );
 
