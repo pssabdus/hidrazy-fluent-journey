@@ -61,8 +61,8 @@ const Header = () => {
               className="btn-hero animate-scale-in"
               onClick={(e) => {
                 e.preventDefault();
-                console.log('Get Started button clicked, navigating to /register');
-                navigate('/register');
+                console.log('Get Started button clicked, navigating to /onboarding');
+                navigate('/onboarding');
               }}
             >
               Get Started
@@ -111,8 +111,8 @@ const Header = () => {
                 className="w-full btn-hero"
                 onClick={(e) => {
                   e.preventDefault();
-                  console.log('Mobile Get Started button clicked, navigating to /register');
-                  navigate('/register');
+                  console.log('Mobile Get Started button clicked, navigating to /onboarding');
+                  navigate('/onboarding');
                   setIsMenuOpen(false);
                 }}
               >

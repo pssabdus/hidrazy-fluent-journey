@@ -41,8 +41,8 @@ const HeroSection = () => {
               className="btn-hero text-lg px-12 py-6 animate-scale-in"
               onClick={(e) => {
                 e.preventDefault();
-                console.log('Start Learning Free button clicked, navigating to /register');
-                navigate('/register');
+                console.log('Start Learning Free button clicked, navigating to /onboarding');
+                navigate('/onboarding');
               }}
             >
               Start Learning Free

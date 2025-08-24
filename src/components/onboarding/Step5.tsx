@@ -242,11 +242,11 @@ export function Step5({ data, onComplete, isLoading }: Step5Props) {
           ) : (
             <Sparkles className="w-5 h-5 mr-2" />
           )}
-          {isLoading ? 'Setting up your journey...' : 'Start Learning with Razia'}
+          {isLoading ? 'Setting up your journey...' : 'Create Your Account'}
         </Button>
 
         <p className="text-sm text-muted-foreground mt-4">
-          Get ready to have natural conversations and achieve fluency faster than ever!
+          Complete your profile to start your personalized learning journey!
         </p>
       </motion.div>
     </motion.div>

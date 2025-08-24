@@ -1,11 +1,9 @@
 import { useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
 import { useOnboardingData } from '@/hooks/useOnboardingData';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
 import { ProgressBar } from '@/components/onboarding/ProgressBar';
@@ -26,17 +24,11 @@ const stepValidation = {
 };
 
 export default function Onboarding() {
-  const { user } = useAuth();
   const navigate = useNavigate();
   const { data, updateData, clearData, isLoaded } = useOnboardingData();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [direction, setDirection] = useState(0);
-
-  // Redirect if not authenticated
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
 
   if (!isLoaded) {
     return (
@@ -78,40 +70,21 @@ export default function Onboarding() {
     setIsSubmitting(true);
     
     try {
-      // Update user profile in Supabase
-      const { error } = await supabase
-        .from('users')
-        .update({
-          onboarding_completed: true,
-          age_group: data.ageGroup,
-          gender: data.gender,
-          country: data.country,
-          learning_goal: data.learningGoal,
-          current_level: data.currentLevel,
-          accent_preference: data.accentPreference,
-          explanation_preference: data.explanationLanguage,
-          daily_goal_minutes: data.dailyGoalMinutes,
-          target_ielts_band: data.ieltsTargetBand,
-        })
-        .eq('id', user.id);
-
-      if (error) throw error;
-
-      // Clear onboarding data from localStorage
-      clearData();
-
+      // Store onboarding data in localStorage to pass to registration
+      localStorage.setItem('onboarding_data', JSON.stringify(data));
+      
       toast({
-        title: "Welcome to Hidrazy! 🎉",
-        description: "Your learning journey is ready to begin.",
+        title: "Profile ready! 🎉",
+        description: "Let's create your account to get started.",
       });
 
-      // Navigate to dashboard
-      navigate('/');
+      // Navigate to registration with onboarding data
+      navigate('/register');
     } catch (error: any) {
-      console.error('Error completing onboarding:', error);
+      console.error('Error storing onboarding data:', error);
       toast({
-        title: "Setup error",
-        description: error.message || "Failed to complete setup. Please try again.",
+        title: "Error",
+        description: "Failed to save your preferences. Please try again.",
         variant: "destructive",
       });
     } finally {
