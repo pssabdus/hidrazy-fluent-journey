@@ -358,9 +358,7 @@ export function DashboardLayout() {
                   )}
                   {activeTab === 'razia' && (
                     <RaziaConversationInterface
-                      userId={user?.id || ''}
-                      userName={user?.email?.split('@')[0] || 'Student'}
-                      initialType="free-chat"
+                      conversationType="free_chat"
                     />
                   )}
                   {activeTab === 'progress' && (
