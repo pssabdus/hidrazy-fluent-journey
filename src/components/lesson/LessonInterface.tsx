@@ -291,23 +291,36 @@ export function LessonInterface({
   };
 
   const playAudio = async (audioUrl: string) => {
+    console.log('playAudio called with URL:', audioUrl ? 'URL exists' : 'No URL');
     setCurrentPlayingAudio(audioUrl);
     setIsRaziaSpeaking(true);
 
     try {
       const audio = new Audio(audioUrl);
       
+      audio.onloadstart = () => {
+        console.log('Audio loading started');
+      };
+      
+      audio.oncanplay = () => {
+        console.log('Audio can play');
+      };
+      
       audio.onended = () => {
+        console.log('Audio playback ended');
         setIsRaziaSpeaking(false);
         setCurrentPlayingAudio(null);
       };
       
-      audio.onerror = () => {
+      audio.onerror = (e) => {
+        console.error('Audio playback error:', e);
         setIsRaziaSpeaking(false);
         setCurrentPlayingAudio(null);
       };
 
+      console.log('Attempting to play audio...');
       await audio.play();
+      console.log('Audio play() called successfully');
       
     } catch (error) {
       console.error('Error playing audio:', error);
