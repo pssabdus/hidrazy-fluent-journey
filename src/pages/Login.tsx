@@ -44,16 +44,25 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) return;
+    console.log('Form submitted with data:', formData);
+    
+    if (!validateForm()) {
+      console.log('Form validation failed');
+      return;
+    }
 
+    console.log('Form validation passed, calling signIn...');
     const { error } = await signIn(formData.email, formData.password, formData.rememberMe);
 
     if (error) {
+      console.log('Sign in returned error:', error);
       toast({
         title: "Sign in failed",
         description: error.message,
         variant: "destructive",
       });
+    } else {
+      console.log('Sign in successful');
     }
   };
 

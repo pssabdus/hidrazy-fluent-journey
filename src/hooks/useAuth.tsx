@@ -108,19 +108,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signIn = async (email: string, password: string, rememberMe = false) => {
+    console.log('signIn called with:', { email, rememberMe });
+    
     if (!checkRateLimit()) {
+      console.log('Rate limit exceeded');
       return { error: { message: 'Too many attempts. Please try again later.' } };
     }
 
+    console.log('Setting loading state...');
     setState(prev => ({ ...prev, loading: true, error: null }));
 
     try {
+      console.log('Attempting to sign in with Supabase...');
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
+        console.log('Sign in error:', error);
         incrementAttempts();
         setState(prev => ({ ...prev, loading: false, error: { message: error.message } }));
         return { error: { message: error.message } };
