@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menu, X, Globe } from 'lucide-react';
 import { Button } from './ui/button';
+import { useAuth } from '@/hooks/useAuth';
 import arabicAccent from '@/assets/arabic-accent.png';
 
 const Header = () => {
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [language, setLanguage] = useState('EN');
@@ -45,28 +47,40 @@ const Header = () => {
             </Button>
 
             {/* Auth Buttons */}
-            <Button 
-              variant="outline" 
-              className="border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300"
-              onClick={(e) => {
-                e.preventDefault();
-                console.log('Sign In button clicked, navigating to /login');
-                navigate('/login');
-              }}
-            >
-              Sign In
-            </Button>
-            
-            <Button 
-              className="btn-hero animate-scale-in"
-              onClick={(e) => {
-                e.preventDefault();
-                console.log('Get Started button clicked, navigating to /onboarding');
-                navigate('/onboarding');
-              }}
-            >
-              Get Started
-            </Button>
+            {user ? (
+              <Button 
+                variant="outline" 
+                className="border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300"
+                onClick={signOut}
+              >
+                Sign Out
+              </Button>
+            ) : (
+              <>
+                <Button 
+                  variant="outline" 
+                  className="border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    console.log('Sign In button clicked, navigating to /login');
+                    navigate('/login');
+                  }}
+                >
+                  Sign In
+                </Button>
+                
+                <Button 
+                  className="btn-hero animate-scale-in"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    console.log('Get Started button clicked, navigating to /onboarding');
+                    navigate('/onboarding');
+                  }}
+                >
+                  Get Started
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
