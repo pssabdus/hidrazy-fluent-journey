@@ -99,42 +99,44 @@ If there are corrections, format them as an array in your response.`;
             content: userMessage
           }
         ],
-        max_tokens: 300,
-        temperature: 0.7,
-        functions: [
+        max_completion_tokens: 300,
+        tools: [
           {
-            name: 'respond_as_razia',
-            description: 'Respond as Razia with corrections if needed',
-            parameters: {
-              type: 'object',
-              properties: {
-                message: {
-                  type: 'string',
-                  description: 'Razia\'s response message'
-                },
-                corrections: {
-                  type: 'array',
-                  description: 'Grammar or vocabulary corrections',
-                  items: {
-                    type: 'object',
-                    properties: {
-                      original: { type: 'string' },
-                      suggestion: { type: 'string' },
-                      explanation: { type: 'string' }
+            type: 'function',
+            function: {
+              name: 'respond_as_razia',
+              description: 'Respond as Razia with corrections if needed',
+              parameters: {
+                type: 'object',
+                properties: {
+                  message: {
+                    type: 'string',
+                    description: 'Razia\'s response message'
+                  },
+                  corrections: {
+                    type: 'array',
+                    description: 'Grammar or vocabulary corrections',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        original: { type: 'string' },
+                        suggestion: { type: 'string' },
+                        explanation: { type: 'string' }
+                      }
                     }
+                  },
+                  emotion: {
+                    type: 'string',
+                    enum: ['neutral', 'encouraging', 'thinking', 'excited', 'corrective'],
+                    description: 'Emotional tone for voice synthesis'
                   }
                 },
-                emotion: {
-                  type: 'string',
-                  enum: ['neutral', 'encouraging', 'thinking', 'excited', 'corrective'],
-                  description: 'Emotional tone for voice synthesis'
-                }
-              },
-              required: ['message']
+                required: ['message']
+              }
             }
           }
         ],
-        function_call: { name: 'respond_as_razia' }
+        tool_choice: { type: 'function', function: { name: 'respond_as_razia' } }
       }),
     });
 
@@ -147,17 +149,17 @@ If there are corrections, format them as an array in your response.`;
     const data = await response.json();
     
     let raziaResponse;
-    if (data.choices[0].function_call) {
-      raziaResponse = JSON.parse(data.choices[0].function_call.arguments);
+    if (data.choices[0].message.tool_calls && data.choices[0].message.tool_calls.length > 0) {
+      raziaResponse = JSON.parse(data.choices[0].message.tool_calls[0].function.arguments);
     } else {
       // Fallback if function calling doesn't work
       raziaResponse = {
-        message: data.choices[0].message.content,
+        message: data.choices[0].message.content || "Hello! How can I help you practice English today?",
         emotion: 'encouraging'
       };
     }
 
-    console.log('Generated Razia response:', raziaResponse.message.substring(0, 50) + '...');
+    console.log('Generated Razia response:', raziaResponse.message ? raziaResponse.message.substring(0, 50) + '...' : 'No message');
 
     return new Response(
       JSON.stringify(raziaResponse),
