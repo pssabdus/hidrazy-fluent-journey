@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { LessonDemo } from '../../lesson/LessonDemo';
+import { PremiumFeaturesShowcase } from '../../premium/PremiumFeaturesShowcase';
 
 interface GeneralEnglishDashboardProps {
   userName?: string;
@@ -176,6 +177,15 @@ export function GeneralEnglishDashboard({
             </div>
           </CardContent>
         </Card>
+      </motion.div>
+
+      {/* Premium Features Showcase */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.8 }}
+      >
+        <PremiumFeaturesShowcase />
       </motion.div>
 
       {/* Floating Chat Button */}

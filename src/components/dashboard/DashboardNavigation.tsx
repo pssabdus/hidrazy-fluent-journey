@@ -1,11 +1,11 @@
 import { motion } from 'framer-motion';
-import { Home, Map, Drama, Award, User, Zap, MessageCircle, TrendingUp } from 'lucide-react';
+import { Home, Map, Drama, Award, User, Zap, MessageCircle, TrendingUp, BarChart3, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { UsageTracker } from '@/components/premium/UsageTracker';
 
 interface DashboardNavigationProps {
-  activeTab: 'home' | 'journey' | 'roleplay' | 'exercises' | 'razia' | 'progress' | 'ielts' | 'profile';
-  onTabChange: (tab: 'home' | 'journey' | 'roleplay' | 'exercises' | 'razia' | 'progress' | 'ielts' | 'profile') => void;
+  activeTab: 'home' | 'journey' | 'roleplay' | 'exercises' | 'razia' | 'progress' | 'analytics' | 'offline' | 'ielts' | 'profile';
+  onTabChange: (tab: 'home' | 'journey' | 'roleplay' | 'exercises' | 'razia' | 'progress' | 'analytics' | 'offline' | 'ielts' | 'profile') => void;
   showIELTS: boolean;
 }
 
@@ -17,6 +17,8 @@ export function DashboardNavigation({ activeTab, onTabChange, showIELTS }: Dashb
     { id: 'exercises' as const, label: 'Exercises', icon: Zap },
     { id: 'razia' as const, label: 'Chat Razia', icon: MessageCircle },
     { id: 'progress' as const, label: 'Progress', icon: TrendingUp },
+    { id: 'analytics' as const, label: 'Analytics', icon: BarChart3 },
+    { id: 'offline' as const, label: 'Offline', icon: Download },
     ...(showIELTS ? [{ id: 'ielts' as const, label: 'IELTS', icon: Award }] : []),
     { id: 'profile' as const, label: 'Profile', icon: User },
   ];

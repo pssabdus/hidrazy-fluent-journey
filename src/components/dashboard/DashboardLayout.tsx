@@ -16,6 +16,9 @@ import { Scenario } from '@/types/roleplay';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProgressDashboard } from '../progress/ProgressDashboard';
+import { AdvancedAnalyticsDashboard } from '../analytics/AdvancedAnalyticsDashboard';
+import { OfflineLearningHub } from '../offline/OfflineLearningHub';
+import { IELTSMasteryHub } from '../ielts/IELTSMasteryHub';
 import { type ProgressAnalytics } from '@/types/progress';
 
 interface UserData {
@@ -26,7 +29,7 @@ interface UserData {
   subscription_status: string;
 }
 
-type TabType = 'home' | 'journey' | 'roleplay' | 'exercises' | 'razia' | 'progress' | 'ielts' | 'profile';
+type TabType = 'home' | 'journey' | 'roleplay' | 'exercises' | 'razia' | 'progress' | 'analytics' | 'offline' | 'ielts' | 'profile';
 
 export function DashboardLayout() {
   const { user } = useAuth();
@@ -348,6 +351,15 @@ export function DashboardLayout() {
                 userName={user?.email?.split('@')[0] || 'Student'}
                 data={mockProgressData}
               />
+            )}
+            {activeTab === 'analytics' && (
+              <AdvancedAnalyticsDashboard />
+            )}
+            {activeTab === 'offline' && (
+              <OfflineLearningHub />
+            )}
+            {activeTab === 'ielts' && (
+              <IELTSMasteryHub />
             )}
             {(activeTab === 'journey' || activeTab === 'profile') && (
               <div className="text-center py-12">
