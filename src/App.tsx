@@ -11,6 +11,7 @@ import Premium from "./pages/Premium";
 import Subscription from "./pages/Subscription";
 import OfflineLearning from "./pages/OfflineLearning";
 import IELTSMastery from "./pages/IELTSMastery";
+import AIContentStudio from "./pages/AIContentStudio";
 import { PricingPage } from '@/components/subscription/PricingPage';
 import { PaymentSuccess } from '@/components/subscription/PaymentSuccess';
 import { SubscriptionManagement } from '@/components/subscription/SubscriptionManagement';
@@ -29,6 +30,7 @@ const App = () => (
       <Route path="/subscription" element={<Subscription />} />
       <Route path="/offline-learning" element={<OfflineLearning />} />
       <Route path="/ielts-mastery" element={<IELTSMastery />} />
+      <Route path="/ai-content-studio" element={<AIContentStudio />} />
       <Route path="/pricing" element={<PricingPage />} />
       <Route path="/payment-success" element={<PaymentSuccess />} />
       <Route path="/subscription-management" element={<SubscriptionManagement />} />

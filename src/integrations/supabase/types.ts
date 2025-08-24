@@ -586,6 +586,63 @@ export type Database = {
         }
         Relationships: []
       }
+      generated_content: {
+        Row: {
+          completion_data: Json | null
+          completion_score: number | null
+          content_data: Json
+          content_type: string
+          created_at: string
+          cultural_context: string | null
+          description: string | null
+          estimated_duration: number | null
+          id: string
+          is_completed: boolean | null
+          learning_objectives: string[] | null
+          level: string
+          title: string
+          topic: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completion_data?: Json | null
+          completion_score?: number | null
+          content_data?: Json
+          content_type: string
+          created_at?: string
+          cultural_context?: string | null
+          description?: string | null
+          estimated_duration?: number | null
+          id?: string
+          is_completed?: boolean | null
+          learning_objectives?: string[] | null
+          level: string
+          title: string
+          topic?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completion_data?: Json | null
+          completion_score?: number | null
+          content_data?: Json
+          content_type?: string
+          created_at?: string
+          cultural_context?: string | null
+          description?: string | null
+          estimated_duration?: number | null
+          id?: string
+          is_completed?: boolean | null
+          learning_objectives?: string[] | null
+          level?: string
+          title?: string
+          topic?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       learning_analytics: {
         Row: {
           arabic_transfer_issues: Json | null
@@ -821,6 +878,84 @@ export type Database = {
           razia_prompts_json?: Json | null
           title?: string
           world?: string
+        }
+        Relationships: []
+      }
+      level_assessments: {
+        Row: {
+          assessment_data: Json | null
+          assessment_type: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          level: string
+          max_score: number | null
+          passed: boolean | null
+          score: number | null
+          user_id: string
+        }
+        Insert: {
+          assessment_data?: Json | null
+          assessment_type: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          level: string
+          max_score?: number | null
+          passed?: boolean | null
+          score?: number | null
+          user_id: string
+        }
+        Update: {
+          assessment_data?: Json | null
+          assessment_type?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          level?: string
+          max_score?: number | null
+          passed?: boolean | null
+          score?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      level_progression: {
+        Row: {
+          assessment_scores: Json | null
+          created_at: string
+          current_level: string
+          id: string
+          levels_completed: string[] | null
+          next_assessment_due: string | null
+          streak_days: number | null
+          total_learning_time: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assessment_scores?: Json | null
+          created_at?: string
+          current_level?: string
+          id?: string
+          levels_completed?: string[] | null
+          next_assessment_due?: string | null
+          streak_days?: number | null
+          total_learning_time?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assessment_scores?: Json | null
+          created_at?: string
+          current_level?: string
+          id?: string
+          levels_completed?: string[] | null
+          next_assessment_due?: string | null
+          streak_days?: number | null
+          total_learning_time?: number | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
