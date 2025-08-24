@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -357,9 +357,14 @@ export function DashboardLayout() {
                     <ExerciseHub />
                   )}
                   {activeTab === 'razia' && (
-                    <RaziaConversationInterface
-                      conversationType="free_chat"
-                    />
+                    React.createElement(
+                      React.lazy(() => 
+                        import('@/components/conversation/RaziaConversationInterface').then(module => ({ 
+                          default: module.RaziaConversationInterface 
+                        }))
+                      ),
+                      { conversationType: "free_chat" }
+                    )
                   )}
                   {activeTab === 'progress' && (
                     <ComprehensiveProgressDashboard

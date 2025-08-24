@@ -30,8 +30,8 @@ import { Badge } from '@/components/ui/badge';
 import { UsageTracker } from '@/components/premium/UsageTracker';
 
 interface AppSidebarProps {
-  activeTab: 'home' | 'journey' | 'roleplay' | 'exercises' | 'razia' | 'progress' | 'analytics' | 'offline' | 'ielts' | 'profile';
-  onTabChange: (tab: 'home' | 'journey' | 'roleplay' | 'exercises' | 'razia' | 'progress' | 'analytics' | 'offline' | 'ielts' | 'profile') => void;
+  activeTab: 'home' | 'journey' | 'roleplay' | 'exercises' | 'razia' | 'progress' | 'analytics' | 'premium' | 'offline' | 'ielts' | 'profile';
+  onTabChange: (tab: 'home' | 'journey' | 'roleplay' | 'exercises' | 'razia' | 'progress' | 'analytics' | 'premium' | 'offline' | 'ielts' | 'profile') => void;
   showIELTS: boolean;
 }
 
@@ -48,6 +48,7 @@ export function AppSidebar({ activeTab, onTabChange, showIELTS }: AppSidebarProp
   const learningItems = [
     { id: 'progress' as const, label: 'Progress', icon: TrendingUp, isPremium: false },
     { id: 'analytics' as const, label: 'Advanced Analytics', icon: BarChart3, isPremium: true },
+    { id: 'premium' as const, label: 'Premium Features', icon: Crown, isPremium: false },
     { id: 'offline' as const, label: 'Offline Learning', icon: Download, isPremium: true },
     ...(showIELTS ? [{ id: 'ielts' as const, label: 'IELTS Mastery', icon: Award, isPremium: true }] : []),
   ];

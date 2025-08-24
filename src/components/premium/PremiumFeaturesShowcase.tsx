@@ -30,7 +30,13 @@ interface PremiumFeature {
 }
 
 export const PremiumFeaturesShowcase: React.FC = () => {
-  const { subscribed: isPremium, subscription, upgradeUrl } = usePremium();
+  const { subscription } = usePremium();
+  const isPremium = subscription?.tier === 'premium' || subscription?.tier === 'business';
+  
+  const handleUpgrade = async () => {
+    // Redirect to premium page for now
+    window.location.href = '/premium';
+  };
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
@@ -93,21 +99,6 @@ export const PremiumFeaturesShowcase: React.FC = () => {
     }
   ];
 
-  const handleUpgrade = async () => {
-    if (upgradeUrl) {
-      window.open(upgradeUrl, '_blank');
-    }
-  };
-      console.error('Upgrade error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to start upgrade process. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const categoryColors = {
     ai: 'bg-purple-50 border-purple-200 text-purple-700',
@@ -160,14 +151,14 @@ export const PremiumFeaturesShowcase: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-green-900">Premium Active</h3>
-                    <p className="text-sm text-green-700">
-                      Subscription: {subscription?.subscription_tier || 'Premium'}
-                      {subscription?.subscription_end && (
-                        <span className="ml-2">
-                          • Renews {new Date(subscription.subscription_end).toLocaleDateString()}
-                        </span>
-                      )}
-                    </p>
+                     <p className="text-sm text-green-700">
+                       Subscription: {subscription?.tier || 'Premium'}
+                       {subscription?.currentPeriodEnd && (
+                         <span className="ml-2">
+                           • Renews {subscription.currentPeriodEnd.toLocaleDateString()}
+                         </span>
+                       )}
+                     </p>
                   </div>
                 </div>
                 <Badge className="bg-green-100 text-green-800 border-green-300">

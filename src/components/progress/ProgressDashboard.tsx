@@ -245,7 +245,7 @@ export function ProgressDashboard({ userName, userAvatar, data }: ProgressDashbo
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
               >
-                <AdvancedAnalyticsDashboard />
+                <AdvancedAnalyticsDashboard userId="current-user" />
               </motion.div>
             </TabsContent>
 
