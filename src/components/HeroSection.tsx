@@ -39,9 +39,8 @@ const HeroSection = () => {
               asChild
               size="lg"
               className="btn-hero text-lg px-12 py-6 animate-scale-in"
-              onClick={() => console.log('Start Learning Free button clicked')}
             >
-              <Link to="/register">Start Learning Free</Link>
+              <Link to="/register" onClick={() => console.log('Start Learning Free link clicked')}>Start Learning Free</Link>
             </Button>
             
             <Button 
