@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MessageCircle, Award, TrendingUp, BookOpen, Play, Headphones } from 'lucide-react';
 import { WelcomeCard } from '../cards/WelcomeCard';
@@ -7,6 +8,7 @@ import { QuickActionCard } from '../cards/QuickActionCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { LessonDemo } from '../../lesson/LessonDemo';
 
 interface GeneralEnglishDashboardProps {
   userName?: string;
@@ -21,6 +23,7 @@ export function GeneralEnglishDashboard({
   worldName, 
   streak 
 }: GeneralEnglishDashboardProps) {
+  const [showLessonDemo, setShowLessonDemo] = useState(false);
   const achievements = [
     { title: 'First Conversation', icon: MessageCircle, unlocked: true },
     { title: 'Grammar Master', icon: BookOpen, unlocked: true },
@@ -29,6 +32,10 @@ export function GeneralEnglishDashboard({
   ];
 
   const weeklyData = [40, 65, 30, 80, 45, 70, 85];
+
+  if (showLessonDemo) {
+    return <LessonDemo onClose={() => setShowLessonDemo(false)} />;
+  }
 
   return (
     <div className="space-y-6 pb-24">
@@ -46,7 +53,7 @@ export function GeneralEnglishDashboard({
           subtitle="Continue your learning journey"
           percentage={currentProgress}
           buttonText="Continue Learning"
-          onContinue={() => console.log('Continue learning')}
+          onContinue={() => setShowLessonDemo(true)}
         />
         
         <DailyChallengeCard
@@ -192,7 +199,7 @@ export function GeneralEnglishDashboard({
           <Button
             size="lg"
             className="h-14 w-14 rounded-full bg-gradient-to-r from-primary to-primary-glow shadow-lg hover:shadow-xl"
-            onClick={() => console.log('Chat with Razia')}
+            onClick={() => setShowLessonDemo(true)}
           >
             <MessageCircle className="w-6 h-6" />
           </Button>
