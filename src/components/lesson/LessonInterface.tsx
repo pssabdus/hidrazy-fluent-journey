@@ -40,7 +40,7 @@ export function LessonInterface({
       const { data: audioData, error: audioError } = await supabase.functions.invoke('text-to-speech', {
         body: {
           text: welcomeText,
-          voice: 'EXAVITQu4vr4xnSDxMaL',
+          voice: 'nova', // Use OpenAI voice instead of ElevenLabs
           emotion: 'encouraging'
         }
       });
@@ -238,7 +238,7 @@ export function LessonInterface({
       const { data: audioData, error: audioError } = await supabase.functions.invoke('text-to-speech', {
         body: {
           text: aiResponse.response,
-          voice: 'EXAVITQu4vr4xnSDxMaL', // Razia's voice ID from ElevenLabs
+          voice: 'nova', // Use OpenAI voice instead of ElevenLabs
           emotion: 'encouraging'
         }
       });

@@ -55,8 +55,14 @@ serve(async (req) => {
 
     console.log('[TTS] Audio generated successfully, size:', arrayBuffer.byteLength);
 
+    // Create audio URL from base64
+    const audioUrl = `data:audio/mpeg;base64,${base64Audio}`;
+
     return new Response(
-      JSON.stringify({ audioContent: base64Audio }),
+      JSON.stringify({ 
+        audioContent: base64Audio,
+        audioUrl: audioUrl 
+      }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       },
