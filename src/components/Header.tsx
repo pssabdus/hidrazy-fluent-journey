@@ -48,6 +48,7 @@ const Header = () => {
               asChild
               variant="outline" 
               className="border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300"
+              onClick={() => console.log('Sign In button clicked')}
             >
               <Link to="/login">Sign In</Link>
             </Button>
@@ -55,6 +56,7 @@ const Header = () => {
             <Button 
               asChild
               className="btn-hero animate-scale-in"
+              onClick={() => console.log('Get Started button clicked')}
             >
               <Link to="/register">Get Started</Link>
             </Button>
