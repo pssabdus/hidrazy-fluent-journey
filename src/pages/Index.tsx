@@ -1,5 +1,5 @@
 import { useAuth } from '@/hooks/useAuth';
-import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
+import { SimplifiedDashboard } from '@/components/dashboard/SimplifiedDashboard';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import FeaturesSection from '@/components/FeaturesSection';
@@ -20,7 +20,7 @@ const Index = () => {
 
   // Show dashboard for authenticated users
   if (user) {
-    return <DashboardLayout />;
+    return <SimplifiedDashboard />;
   }
 
   // Show landing page for non-authenticated users

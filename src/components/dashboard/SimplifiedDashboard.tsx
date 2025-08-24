@@ -1,0 +1,511 @@
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
+import { 
+  MessageCircle, 
+  Target, 
+  BarChart3, 
+  Settings, 
+  Play, 
+  Lock, 
+  Check, 
+  Clock,
+  Sparkles
+} from 'lucide-react';
+import { RaziaConversationInterface } from '@/components/conversation/RaziaConversationInterface';
+import ComprehensiveProgressDashboard from '@/components/progress/ComprehensiveProgressDashboard';
+
+interface UserData {
+  learning_goal: string;
+  target_ielts_band?: number;
+  current_level: string;
+  country: string;
+  subscription_status: string;
+}
+
+interface DailyActivity {
+  id: string;
+  type: 'chat' | 'practice' | 'review';
+  title: string;
+  description: string;
+  duration: string;
+  isCompleted: boolean;
+  isUnlocked: boolean;
+  icon: typeof MessageCircle;
+}
+
+export function SimplifiedDashboard() {
+  const { user } = useAuth();
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [currentView, setCurrentView] = useState<'dashboard' | 'chat' | 'progress' | 'settings'>('dashboard');
+  const [streak, setStreak] = useState(7);
+  const [currentProgress, setCurrentProgress] = useState(65);
+  const [advancedMode, setAdvancedMode] = useState(false);
+
+  // AI-generated daily theme
+  const dailyTheme = "Past Tense Storytelling";
+  
+  // Daily activities with sequential unlock logic
+  const [dailyActivities, setDailyActivities] = useState<DailyActivity[]>([
+    {
+      id: 'chat',
+      type: 'chat',
+      title: 'Chat with Razia',
+      description: 'Practice conversations about past experiences',
+      duration: '15-20 min',
+      isCompleted: false,
+      isUnlocked: true,
+      icon: MessageCircle
+    },
+    {
+      id: 'practice',
+      type: 'practice',
+      title: 'Story Building',
+      description: 'Create stories using past tense verbs',
+      duration: '10 min',
+      isCompleted: false,
+      isUnlocked: false,
+      icon: Play
+    },
+    {
+      id: 'review',
+      type: 'review',
+      title: 'Quick Review',
+      description: 'Review today\'s vocabulary and grammar',
+      duration: '5 min',
+      isCompleted: false,
+      isUnlocked: false,
+      icon: BarChart3
+    }
+  ]);
+
+  useEffect(() => {
+    if (user) {
+      fetchUserData();
+    }
+  }, [user]);
+
+  // Update unlock status based on completion
+  useEffect(() => {
+    setDailyActivities(prev => {
+      const updated = [...prev];
+      const chatCompleted = updated[0].isCompleted;
+      const practiceCompleted = updated[1].isCompleted;
+      
+      // Unlock practice after chat completion
+      if (chatCompleted && !updated[1].isUnlocked) {
+        updated[1].isUnlocked = true;
+      }
+      
+      // Unlock review after practice completion
+      if (practiceCompleted && !updated[2].isUnlocked) {
+        updated[2].isUnlocked = true;
+      }
+      
+      return updated;
+    });
+  }, [dailyActivities]);
+
+  const fetchUserData = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('learning_goal, target_ielts_band, current_level, country, subscription_status')
+        .eq('id', user?.id)
+        .single();
+
+      if (error) throw error;
+      setUserData(data);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getTimeOfDay = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
+
+  const getLevelName = (level: string) => {
+    const levels = {
+      'beginner': 'Foundation Explorer',
+      'intermediate': 'Conversation Builder', 
+      'advanced': 'Fluency Master'
+    };
+    return levels[level as keyof typeof levels] || 'English Learner';
+  };
+
+  const getNextLevel = (level: string) => {
+    const progression = {
+      'beginner': 'intermediate',
+      'intermediate': 'advanced',
+      'advanced': 'native'
+    };
+    return progression[level as keyof typeof progression] || 'next level';
+  };
+
+  const handleActivityComplete = (activityId: string) => {
+    setDailyActivities(prev => 
+      prev.map(activity => 
+        activity.id === activityId 
+          ? { ...activity, isCompleted: true }
+          : activity
+      )
+    );
+  };
+
+  const handleActivityClick = (activity: DailyActivity) => {
+    if (!activity.isUnlocked) return;
+    
+    if (activity.type === 'chat') {
+      setCurrentView('chat');
+    } else {
+      // Mock completion for now
+      handleActivityComplete(activity.id);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="max-w-4xl mx-auto space-y-6">
+          <Skeleton className="h-24 w-full" />
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div className="lg:col-span-3 space-y-6">
+              <Skeleton className="h-40 w-full" />
+              <Skeleton className="h-60 w-full" />
+            </div>
+            <div className="space-y-4">
+              <Skeleton className="h-32 w-full" />
+              <Skeleton className="h-32 w-full" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (currentView === 'chat') {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="p-4 border-b bg-card">
+          <Button 
+            variant="ghost" 
+            onClick={() => {
+              setCurrentView('dashboard');
+              handleActivityComplete('chat');
+            }}
+            className="mb-2"
+          >
+            ← Back to Dashboard
+          </Button>
+        </div>
+        <RaziaConversationInterface conversationType="free_chat" />
+      </div>
+    );
+  }
+
+  if (currentView === 'progress') {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="p-4 border-b bg-card">
+          <Button 
+            variant="ghost" 
+            onClick={() => setCurrentView('dashboard')}
+            className="mb-2"
+          >
+            ← Back to Dashboard
+          </Button>
+        </div>
+        <ComprehensiveProgressDashboard userId={user?.id || ''} />
+      </div>
+    );
+  }
+
+  if (currentView === 'settings') {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="max-w-2xl mx-auto">
+          <Button 
+            variant="ghost" 
+            onClick={() => setCurrentView('dashboard')}
+            className="mb-6"
+          >
+            ← Back to Dashboard
+          </Button>
+          
+          <Card>
+            <CardContent className="p-6">
+              <h2 className="text-2xl font-bold mb-6">Settings</h2>
+              
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold">Advanced Mode</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Show all categories and complex navigation
+                    </p>
+                  </div>
+                  <Button
+                    variant={advancedMode ? "default" : "outline"}
+                    onClick={() => setAdvancedMode(!advancedMode)}
+                    size="sm"
+                  >
+                    {advancedMode ? 'ON' : 'OFF'}
+                  </Button>
+                </div>
+                
+                <div className="pt-4 border-t">
+                  <p className="text-sm text-muted-foreground">
+                    Coming soon: Language preferences, notification settings, learning pace adjustments
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="max-w-6xl mx-auto p-6">
+        {/* Main Dashboard - 80% */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+          <div className="lg:col-span-3 space-y-6">
+            {/* Welcome Header */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center lg:text-left"
+            >
+              <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-2">
+                {getTimeOfDay()}, {user?.email?.split('@')[0]}! 
+                <motion.span
+                  animate={{ rotate: [0, 20, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                  className="inline-block ml-2"
+                >
+                  👋
+                </motion.span>
+              </h1>
+              <div className="flex items-center justify-center lg:justify-start gap-2 mb-4">
+                <span className="text-lg">Ready for day</span>
+                <Badge variant="secondary" className="bg-orange-100 text-orange-700">
+                  {streak}
+                </Badge>
+                <motion.span
+                  animate={{ 
+                    scale: [1, 1.2, 1],
+                    rotate: [0, 10, -10, 0]
+                  }}
+                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+                  className="text-2xl"
+                >
+                  🔥
+                </motion.span>
+              </div>
+            </motion.div>
+
+            {/* Current Level Display */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <Card className="bg-gradient-card border-0 shadow-card">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-xl font-semibold text-foreground">
+                        {userData?.current_level?.charAt(0).toUpperCase() + userData?.current_level?.slice(1)} - {getLevelName(userData?.current_level || 'beginner')}
+                      </h3>
+                      <p className="text-muted-foreground">
+                        {currentProgress}% to {getNextLevel(userData?.current_level || 'beginner')}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-2xl mb-1">🎯</div>
+                      <p className="text-sm text-muted-foreground">Goal: {userData?.learning_goal || 'General English'}</p>
+                    </div>
+                  </div>
+                  <Progress value={currentProgress} className="h-3" />
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Today's Focus Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Card className="border-primary/20 bg-primary/5">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-2 mb-6">
+                    <Sparkles className="w-6 h-6 text-primary" />
+                    <h2 className="text-2xl font-bold text-foreground">Today's Focus</h2>
+                  </div>
+                  
+                  <div className="bg-white/50 rounded-xl p-4 mb-6">
+                    <h3 className="text-lg font-semibold text-center text-primary">
+                      "{dailyTheme}"
+                    </h3>
+                  </div>
+
+                  <div className="space-y-4">
+                    {dailyActivities.map((activity, index) => {
+                      const Icon = activity.icon;
+                      return (
+                        <motion.div
+                          key={activity.id}
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.3 + index * 0.1 }}
+                        >
+                          <Card 
+                            className={`cursor-pointer transition-all duration-300 ${
+                              activity.isUnlocked 
+                                ? 'hover:shadow-lg hover:-translate-y-1' 
+                                : 'opacity-60 cursor-not-allowed'
+                            } ${
+                              activity.isCompleted 
+                                ? 'bg-green-50 border-green-200' 
+                                : activity.isUnlocked 
+                                ? 'bg-white border-primary/20 hover:border-primary/40'
+                                : 'bg-gray-50 border-gray-200'
+                            }`}
+                            onClick={() => handleActivityClick(activity)}
+                          >
+                            <CardContent className="p-4">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                                    activity.isCompleted 
+                                      ? 'bg-green-100 text-green-600'
+                                      : activity.isUnlocked
+                                      ? 'bg-primary/10 text-primary'
+                                      : 'bg-gray-100 text-gray-400'
+                                  }`}>
+                                    {activity.isCompleted ? (
+                                      <Check className="w-6 h-6" />
+                                    ) : activity.isUnlocked ? (
+                                      <Icon className="w-6 h-6" />
+                                    ) : (
+                                      <Lock className="w-6 h-6" />
+                                    )}
+                                  </div>
+                                  
+                                  <div>
+                                    <h4 className="font-semibold text-foreground">
+                                      {index + 1}. {activity.title}
+                                    </h4>
+                                    <p className="text-sm text-muted-foreground">
+                                      {activity.description}
+                                    </p>
+                                  </div>
+                                </div>
+                                
+                                <div className="text-right">
+                                  <div className="flex items-center gap-1 text-sm text-muted-foreground mb-1">
+                                    <Clock className="w-4 h-4" />
+                                    {activity.duration}
+                                  </div>
+                                  {activity.isCompleted && (
+                                    <Badge variant="secondary" className="bg-green-100 text-green-700">
+                                      ✓ Complete
+                                    </Badge>
+                                  )}
+                                  {!activity.isCompleted && activity.isUnlocked && (
+                                    <Badge variant="secondary" className="bg-blue-100 text-blue-700">
+                                      Start
+                                    </Badge>
+                                  )}
+                                  {!activity.isUnlocked && (
+                                    <Badge variant="secondary" className="bg-orange-100 text-orange-700">
+                                      Locked
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+
+          {/* Secondary Options - 20% */}
+          <div className="space-y-4">
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <Button
+                onClick={() => setCurrentView('progress')}
+                className="w-full h-20 bg-gradient-button hover:shadow-glow transition-all duration-300"
+                size="lg"
+              >
+                <div className="text-center">
+                  <BarChart3 className="w-6 h-6 mx-auto mb-1" />
+                  <span className="font-semibold">My Progress</span>
+                </div>
+              </Button>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <Button
+                onClick={() => setCurrentView('settings')}
+                variant="outline"
+                className="w-full h-20 hover:bg-secondary/50 transition-all duration-300"
+                size="lg"
+              >
+                <div className="text-center">
+                  <Settings className="w-6 h-6 mx-auto mb-1" />
+                  <span className="font-semibold">Settings</span>
+                </div>
+              </Button>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.6 }}
+            >
+              <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl mb-2">🎉</div>
+                  <h4 className="font-semibold text-orange-800 mb-1">Coming Soon</h4>
+                  <p className="text-xs text-orange-600">
+                    Advanced Speaking Practice in 2 days
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
