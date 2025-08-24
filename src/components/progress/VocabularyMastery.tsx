@@ -123,7 +123,7 @@ export function VocabularyMastery({ data, compact = false }: VocabularyMasteryPr
                   <div className="text-xs text-muted-foreground truncate">{word.definition}</div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge className={getLevelColor(word.level)} variant="secondary" size="sm">
+                  <Badge className={getLevelColor(word.level)} variant="secondary">
                     {word.level}
                   </Badge>
                   <div className="w-2 h-2 rounded-full bg-green-500" />

@@ -116,9 +116,9 @@ export function StrengthWeaknessAnalysis({ skillProgress, analysis }: StrengthWe
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                    <Radar className="h-5 w-5 text-primary" />
-                Skill Balance Analysis
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                  Skill Balance Analysis
               </CardTitle>
             </CardHeader>
             <CardContent>
