@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Menu, X, Globe } from 'lucide-react';
 import { Button } from './ui/button';
 import arabicAccent from '@/assets/arabic-accent.png';
 
 const Header = () => {
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [language, setLanguage] = useState('EN');
 
@@ -44,34 +45,28 @@ const Header = () => {
             </Button>
 
             {/* Auth Buttons */}
-            <Link 
-              to="/login" 
+            <Button 
+              variant="outline" 
+              className="border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300"
               onClick={(e) => {
-                console.log('Sign In link clicked');
-                console.log('Current pathname:', window.location.pathname);
-                console.log('Target:', e.currentTarget.getAttribute('href'));
+                e.preventDefault();
+                console.log('Sign In button clicked, navigating to /login');
+                navigate('/login');
               }}
             >
-              <Button 
-                variant="outline" 
-                className="border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300"
-              >
-                Sign In
-              </Button>
-            </Link>
+              Sign In
+            </Button>
             
-            <Link 
-              to="/register" 
+            <Button 
+              className="btn-hero animate-scale-in"
               onClick={(e) => {
-                console.log('Get Started button clicked');
-                console.log('Current pathname:', window.location.pathname);
-                console.log('Target:', e.currentTarget.getAttribute('href'));
+                e.preventDefault();
+                console.log('Get Started button clicked, navigating to /register');
+                navigate('/register');
               }}
             >
-              <Button className="btn-hero animate-scale-in">
-                Get Started
-              </Button>
-            </Link>
+              Get Started
+            </Button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -99,32 +94,30 @@ const Header = () => {
                 <span>{language}</span>
               </Button>
               
-              <Link 
-                to="/login"
+              <Button 
+                variant="outline" 
+                className="w-full border-primary text-primary"
                 onClick={(e) => {
-                  console.log('Mobile Sign In link clicked');
-                  console.log('Current pathname:', window.location.pathname);
+                  e.preventDefault();
+                  console.log('Mobile Sign In button clicked, navigating to /login');
+                  navigate('/login');
+                  setIsMenuOpen(false);
                 }}
               >
-                <Button 
-                  variant="outline" 
-                  className="w-full border-primary text-primary"
-                >
-                  Sign In
-                </Button>
-              </Link>
+                Sign In
+              </Button>
               
-              <Link 
-                to="/register"
+              <Button 
+                className="w-full btn-hero"
                 onClick={(e) => {
-                  console.log('Mobile Get Started button clicked');
-                  console.log('Current pathname:', window.location.pathname);
+                  e.preventDefault();
+                  console.log('Mobile Get Started button clicked, navigating to /register');
+                  navigate('/register');
+                  setIsMenuOpen(false);
                 }}
               >
-                <Button className="w-full btn-hero">
-                  Get Started
-                </Button>
-              </Link>
+                Get Started
+              </Button>
             </div>
           </div>
         )}

@@ -1,9 +1,10 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Play } from 'lucide-react';
 import { Button } from './ui/button';
 import conversationBubbles from '@/assets/conversation-bubbles.png';
 
 const HeroSection = () => {
+  const navigate = useNavigate();
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Hero Gradient Background */}
@@ -35,21 +36,17 @@ const HeroSection = () => {
           
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
-            <Link 
-              to="/register" 
+            <Button 
+              size="lg"
+              className="btn-hero text-lg px-12 py-6 animate-scale-in"
               onClick={(e) => {
-                console.log('Start Learning Free button clicked');
-                console.log('Current pathname:', window.location.pathname);
-                console.log('Target:', e.currentTarget.getAttribute('href'));
+                e.preventDefault();
+                console.log('Start Learning Free button clicked, navigating to /register');
+                navigate('/register');
               }}
             >
-              <Button 
-                size="lg"
-                className="btn-hero text-lg px-12 py-6 animate-scale-in"
-              >
-                Start Learning Free
-              </Button>
-            </Link>
+              Start Learning Free
+            </Button>
             
             <Button 
               size="lg"
