@@ -10,6 +10,7 @@ import { BusinessEnglishDashboard } from './dashboards/BusinessEnglishDashboard'
 import { TravelEnglishDashboard } from './dashboards/TravelEnglishDashboard';
 import { RolePlayHub } from '../roleplay/RolePlayHub';
 import { RolePlayInterface } from '../roleplay/RolePlayInterface';
+import { ExerciseHub } from '../exercises/ExerciseHub';
 import { Scenario } from '@/types/roleplay';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -22,7 +23,7 @@ interface UserData {
   subscription_status: string;
 }
 
-type TabType = 'home' | 'journey' | 'roleplay' | 'ielts' | 'profile';
+type TabType = 'home' | 'journey' | 'roleplay' | 'exercises' | 'ielts' | 'profile';
 
 export function DashboardLayout() {
   const { user } = useAuth();
@@ -181,6 +182,9 @@ export function DashboardLayout() {
                   setSelectedScenario(null);
                 }}
               />
+            )}
+            {activeTab === 'exercises' && (
+              <ExerciseHub />
             )}
             {(activeTab === 'journey' || activeTab === 'profile') && (
               <div className="text-center py-12">
