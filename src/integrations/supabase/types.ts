@@ -14,6 +14,99 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_training_data: {
+        Row: {
+          adaptation_strategy: Json | null
+          anonymized: boolean | null
+          arabic_reference_context: string | null
+          consent_given: boolean | null
+          conversation_quality_score: number | null
+          conversation_sample: Json
+          correction_effectiveness: number | null
+          correction_provided: string | null
+          created_at: string
+          cultural_bridge_example: string | null
+          cultural_context: string | null
+          cultural_sensitivity_score: number | null
+          dataset_type: string
+          educational_value: number | null
+          engagement_factor: number | null
+          error_type: string | null
+          follow_up_needed: boolean | null
+          id: string
+          learning_objective_met: boolean | null
+          personality_mode: string | null
+          razia_response: string | null
+          response_relevance: number | null
+          skill_improvement_evidence: Json | null
+          training_approved: boolean | null
+          updated_at: string
+          user_confidence_level: number | null
+          user_input: string | null
+          user_level: string | null
+        }
+        Insert: {
+          adaptation_strategy?: Json | null
+          anonymized?: boolean | null
+          arabic_reference_context?: string | null
+          consent_given?: boolean | null
+          conversation_quality_score?: number | null
+          conversation_sample: Json
+          correction_effectiveness?: number | null
+          correction_provided?: string | null
+          created_at?: string
+          cultural_bridge_example?: string | null
+          cultural_context?: string | null
+          cultural_sensitivity_score?: number | null
+          dataset_type: string
+          educational_value?: number | null
+          engagement_factor?: number | null
+          error_type?: string | null
+          follow_up_needed?: boolean | null
+          id?: string
+          learning_objective_met?: boolean | null
+          personality_mode?: string | null
+          razia_response?: string | null
+          response_relevance?: number | null
+          skill_improvement_evidence?: Json | null
+          training_approved?: boolean | null
+          updated_at?: string
+          user_confidence_level?: number | null
+          user_input?: string | null
+          user_level?: string | null
+        }
+        Update: {
+          adaptation_strategy?: Json | null
+          anonymized?: boolean | null
+          arabic_reference_context?: string | null
+          consent_given?: boolean | null
+          conversation_quality_score?: number | null
+          conversation_sample?: Json
+          correction_effectiveness?: number | null
+          correction_provided?: string | null
+          created_at?: string
+          cultural_bridge_example?: string | null
+          cultural_context?: string | null
+          cultural_sensitivity_score?: number | null
+          dataset_type?: string
+          educational_value?: number | null
+          engagement_factor?: number | null
+          error_type?: string | null
+          follow_up_needed?: boolean | null
+          id?: string
+          learning_objective_met?: boolean | null
+          personality_mode?: string | null
+          razia_response?: string | null
+          response_relevance?: number | null
+          skill_improvement_evidence?: Json | null
+          training_approved?: boolean | null
+          updated_at?: string
+          user_confidence_level?: number | null
+          user_input?: string | null
+          user_level?: string | null
+        }
+        Relationships: []
+      }
       assessments: {
         Row: {
           assessment_data_json: Json | null
@@ -112,6 +205,189 @@ export type Database = {
         }
         Relationships: []
       }
+      content_recommendations: {
+        Row: {
+          content_description: string | null
+          content_id: string | null
+          content_title: string
+          created_at: string
+          cultural_relevance_score: number | null
+          difficulty_level: string | null
+          effectiveness_score: number | null
+          estimated_duration_minutes: number | null
+          id: string
+          last_reviewed: string | null
+          learning_gaps_addressed: Json | null
+          learning_objectives: Json | null
+          next_review_due: string | null
+          optimal_timing: string | null
+          predicted_engagement: number | null
+          predicted_success_rate: number | null
+          prerequisite_skills: Json | null
+          priority_score: number | null
+          recommendation_reasoning: Json | null
+          recommendation_type: string
+          repetition_count: number | null
+          spaced_repetition_interval: number | null
+          status: string | null
+          updated_at: string
+          user_feedback: Json | null
+          user_id: string
+          user_interest_alignment: number | null
+        }
+        Insert: {
+          content_description?: string | null
+          content_id?: string | null
+          content_title: string
+          created_at?: string
+          cultural_relevance_score?: number | null
+          difficulty_level?: string | null
+          effectiveness_score?: number | null
+          estimated_duration_minutes?: number | null
+          id?: string
+          last_reviewed?: string | null
+          learning_gaps_addressed?: Json | null
+          learning_objectives?: Json | null
+          next_review_due?: string | null
+          optimal_timing?: string | null
+          predicted_engagement?: number | null
+          predicted_success_rate?: number | null
+          prerequisite_skills?: Json | null
+          priority_score?: number | null
+          recommendation_reasoning?: Json | null
+          recommendation_type: string
+          repetition_count?: number | null
+          spaced_repetition_interval?: number | null
+          status?: string | null
+          updated_at?: string
+          user_feedback?: Json | null
+          user_id: string
+          user_interest_alignment?: number | null
+        }
+        Update: {
+          content_description?: string | null
+          content_id?: string | null
+          content_title?: string
+          created_at?: string
+          cultural_relevance_score?: number | null
+          difficulty_level?: string | null
+          effectiveness_score?: number | null
+          estimated_duration_minutes?: number | null
+          id?: string
+          last_reviewed?: string | null
+          learning_gaps_addressed?: Json | null
+          learning_objectives?: Json | null
+          next_review_due?: string | null
+          optimal_timing?: string | null
+          predicted_engagement?: number | null
+          predicted_success_rate?: number | null
+          prerequisite_skills?: Json | null
+          priority_score?: number | null
+          recommendation_reasoning?: Json | null
+          recommendation_type?: string
+          repetition_count?: number | null
+          spaced_repetition_interval?: number | null
+          status?: string | null
+          updated_at?: string
+          user_feedback?: Json | null
+          user_id?: string
+          user_interest_alignment?: number | null
+        }
+        Relationships: []
+      }
+      conversation_history: {
+        Row: {
+          adaptive_response_data: Json | null
+          arabic_reference_made: boolean | null
+          content: string
+          conversation_id: string
+          conversation_topic: string | null
+          corrections_provided: Json | null
+          created_at: string
+          cultural_bridge_used: boolean | null
+          cultural_context: Json | null
+          difficulty_level: string | null
+          emotion_confidence: number | null
+          engagement_level: number | null
+          error_types: Json | null
+          errors_detected: Json | null
+          fluency_score: number | null
+          grammar_score: number | null
+          id: string
+          lesson_connection: string | null
+          message_index: number
+          pronunciation_score: number | null
+          razia_personality_mode: string | null
+          response_time_ms: number | null
+          sender: string
+          timestamp: string
+          updated_at: string
+          user_confidence_level: number | null
+          user_emotion: string | null
+          user_id: string
+        }
+        Insert: {
+          adaptive_response_data?: Json | null
+          arabic_reference_made?: boolean | null
+          content: string
+          conversation_id: string
+          conversation_topic?: string | null
+          corrections_provided?: Json | null
+          created_at?: string
+          cultural_bridge_used?: boolean | null
+          cultural_context?: Json | null
+          difficulty_level?: string | null
+          emotion_confidence?: number | null
+          engagement_level?: number | null
+          error_types?: Json | null
+          errors_detected?: Json | null
+          fluency_score?: number | null
+          grammar_score?: number | null
+          id?: string
+          lesson_connection?: string | null
+          message_index: number
+          pronunciation_score?: number | null
+          razia_personality_mode?: string | null
+          response_time_ms?: number | null
+          sender: string
+          timestamp?: string
+          updated_at?: string
+          user_confidence_level?: number | null
+          user_emotion?: string | null
+          user_id: string
+        }
+        Update: {
+          adaptive_response_data?: Json | null
+          arabic_reference_made?: boolean | null
+          content?: string
+          conversation_id?: string
+          conversation_topic?: string | null
+          corrections_provided?: Json | null
+          created_at?: string
+          cultural_bridge_used?: boolean | null
+          cultural_context?: Json | null
+          difficulty_level?: string | null
+          emotion_confidence?: number | null
+          engagement_level?: number | null
+          error_types?: Json | null
+          errors_detected?: Json | null
+          fluency_score?: number | null
+          grammar_score?: number | null
+          id?: string
+          lesson_connection?: string | null
+          message_index?: number
+          pronunciation_score?: number | null
+          razia_personality_mode?: string | null
+          response_time_ms?: number | null
+          sender?: string
+          timestamp?: string
+          updated_at?: string
+          user_confidence_level?: number | null
+          user_emotion?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       conversations: {
         Row: {
           completed_at: string | null
@@ -159,6 +435,195 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      feature_usage: {
+        Row: {
+          advanced_analytics_views: number | null
+          business_mode_minutes: number | null
+          churn_risk_score: number | null
+          conversation_minutes: number | null
+          conversations_count: number | null
+          conversations_remaining: number | null
+          conversion_stage: string | null
+          created_at: string
+          cultural_intelligence_uses: number | null
+          daily_conversation_limit: number | null
+          date: string
+          features_used_today: Json | null
+          id: string
+          ielts_practice_sessions: number | null
+          offline_content_downloads: number | null
+          peak_usage_hour: number | null
+          premium_features_attempted: Json | null
+          session_duration_avg_minutes: number | null
+          subscription_active: boolean | null
+          subscription_end_date: string | null
+          subscription_start_date: string | null
+          subscription_tier: string | null
+          trial_end_date: string | null
+          trial_started: boolean | null
+          updated_at: string
+          upgrade_prompt_clicks: number | null
+          upgrade_prompts_shown: number | null
+          user_id: string
+        }
+        Insert: {
+          advanced_analytics_views?: number | null
+          business_mode_minutes?: number | null
+          churn_risk_score?: number | null
+          conversation_minutes?: number | null
+          conversations_count?: number | null
+          conversations_remaining?: number | null
+          conversion_stage?: string | null
+          created_at?: string
+          cultural_intelligence_uses?: number | null
+          daily_conversation_limit?: number | null
+          date?: string
+          features_used_today?: Json | null
+          id?: string
+          ielts_practice_sessions?: number | null
+          offline_content_downloads?: number | null
+          peak_usage_hour?: number | null
+          premium_features_attempted?: Json | null
+          session_duration_avg_minutes?: number | null
+          subscription_active?: boolean | null
+          subscription_end_date?: string | null
+          subscription_start_date?: string | null
+          subscription_tier?: string | null
+          trial_end_date?: string | null
+          trial_started?: boolean | null
+          updated_at?: string
+          upgrade_prompt_clicks?: number | null
+          upgrade_prompts_shown?: number | null
+          user_id: string
+        }
+        Update: {
+          advanced_analytics_views?: number | null
+          business_mode_minutes?: number | null
+          churn_risk_score?: number | null
+          conversation_minutes?: number | null
+          conversations_count?: number | null
+          conversations_remaining?: number | null
+          conversion_stage?: string | null
+          created_at?: string
+          cultural_intelligence_uses?: number | null
+          daily_conversation_limit?: number | null
+          date?: string
+          features_used_today?: Json | null
+          id?: string
+          ielts_practice_sessions?: number | null
+          offline_content_downloads?: number | null
+          peak_usage_hour?: number | null
+          premium_features_attempted?: Json | null
+          session_duration_avg_minutes?: number | null
+          subscription_active?: boolean | null
+          subscription_end_date?: string | null
+          subscription_start_date?: string | null
+          subscription_tier?: string | null
+          trial_end_date?: string | null
+          trial_started?: boolean | null
+          updated_at?: string
+          upgrade_prompt_clicks?: number | null
+          upgrade_prompts_shown?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      learning_analytics: {
+        Row: {
+          arabic_transfer_issues: Json | null
+          challenge_preference: number | null
+          completion_rate: number | null
+          created_at: string
+          cultural_adaptation_progress: number | null
+          cultural_confidence_level: number | null
+          cultural_mistakes: number | null
+          current_difficulty: string | null
+          date: string
+          difficulty_comfort_level: number | null
+          engagement_score: number | null
+          grammar_mistakes: number | null
+          id: string
+          improvement_velocity: number | null
+          learning_efficiency: number | null
+          mistake_patterns: Json | null
+          monthly_trends: Json | null
+          motivation_level: number | null
+          optimal_study_time: string | null
+          peak_performance_hour: number | null
+          pronunciation_mistakes: number | null
+          retention_rate: number | null
+          session_count: number | null
+          study_duration_minutes: number | null
+          total_mistakes: number | null
+          updated_at: string
+          user_id: string
+          vocabulary_mistakes: number | null
+          weekly_progress: Json | null
+        }
+        Insert: {
+          arabic_transfer_issues?: Json | null
+          challenge_preference?: number | null
+          completion_rate?: number | null
+          created_at?: string
+          cultural_adaptation_progress?: number | null
+          cultural_confidence_level?: number | null
+          cultural_mistakes?: number | null
+          current_difficulty?: string | null
+          date?: string
+          difficulty_comfort_level?: number | null
+          engagement_score?: number | null
+          grammar_mistakes?: number | null
+          id?: string
+          improvement_velocity?: number | null
+          learning_efficiency?: number | null
+          mistake_patterns?: Json | null
+          monthly_trends?: Json | null
+          motivation_level?: number | null
+          optimal_study_time?: string | null
+          peak_performance_hour?: number | null
+          pronunciation_mistakes?: number | null
+          retention_rate?: number | null
+          session_count?: number | null
+          study_duration_minutes?: number | null
+          total_mistakes?: number | null
+          updated_at?: string
+          user_id: string
+          vocabulary_mistakes?: number | null
+          weekly_progress?: Json | null
+        }
+        Update: {
+          arabic_transfer_issues?: Json | null
+          challenge_preference?: number | null
+          completion_rate?: number | null
+          created_at?: string
+          cultural_adaptation_progress?: number | null
+          cultural_confidence_level?: number | null
+          cultural_mistakes?: number | null
+          current_difficulty?: string | null
+          date?: string
+          difficulty_comfort_level?: number | null
+          engagement_score?: number | null
+          grammar_mistakes?: number | null
+          id?: string
+          improvement_velocity?: number | null
+          learning_efficiency?: number | null
+          mistake_patterns?: Json | null
+          monthly_trends?: Json | null
+          motivation_level?: number | null
+          optimal_study_time?: string | null
+          peak_performance_hour?: number | null
+          pronunciation_mistakes?: number | null
+          retention_rate?: number | null
+          session_count?: number | null
+          study_duration_minutes?: number | null
+          total_mistakes?: number | null
+          updated_at?: string
+          user_id?: string
+          vocabulary_mistakes?: number | null
+          weekly_progress?: Json | null
+        }
+        Relationships: []
       }
       lesson_progress: {
         Row: {
@@ -297,6 +762,189 @@ export type Database = {
           subscription_tier?: string | null
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      personalization_data: {
+        Row: {
+          ai_personality_preference: string | null
+          arabic_proficiency_level: string | null
+          attention_span_minutes: number | null
+          cognitive_load_preference: number | null
+          communication_style_preference: string | null
+          confidence_patterns: Json | null
+          correction_style_preference: string | null
+          created_at: string
+          cultural_background_data: Json | null
+          cultural_learning_goals: Json | null
+          emotional_support_needs: Json | null
+          explanation_depth_preference: string | null
+          goal_progression_timeline: Json | null
+          id: string
+          learning_path_adjustments: Json | null
+          memory_retention_style: string | null
+          motivation_triggers: Json | null
+          optimal_lesson_length_minutes: number | null
+          personalized_curriculum: Json | null
+          preferred_difficulty_progression: string | null
+          preferred_learning_style: string | null
+          processing_speed: string | null
+          stress_indicators: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_personality_preference?: string | null
+          arabic_proficiency_level?: string | null
+          attention_span_minutes?: number | null
+          cognitive_load_preference?: number | null
+          communication_style_preference?: string | null
+          confidence_patterns?: Json | null
+          correction_style_preference?: string | null
+          created_at?: string
+          cultural_background_data?: Json | null
+          cultural_learning_goals?: Json | null
+          emotional_support_needs?: Json | null
+          explanation_depth_preference?: string | null
+          goal_progression_timeline?: Json | null
+          id?: string
+          learning_path_adjustments?: Json | null
+          memory_retention_style?: string | null
+          motivation_triggers?: Json | null
+          optimal_lesson_length_minutes?: number | null
+          personalized_curriculum?: Json | null
+          preferred_difficulty_progression?: string | null
+          preferred_learning_style?: string | null
+          processing_speed?: string | null
+          stress_indicators?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_personality_preference?: string | null
+          arabic_proficiency_level?: string | null
+          attention_span_minutes?: number | null
+          cognitive_load_preference?: number | null
+          communication_style_preference?: string | null
+          confidence_patterns?: Json | null
+          correction_style_preference?: string | null
+          created_at?: string
+          cultural_background_data?: Json | null
+          cultural_learning_goals?: Json | null
+          emotional_support_needs?: Json | null
+          explanation_depth_preference?: string | null
+          goal_progression_timeline?: Json | null
+          id?: string
+          learning_path_adjustments?: Json | null
+          memory_retention_style?: string | null
+          motivation_triggers?: Json | null
+          optimal_lesson_length_minutes?: number | null
+          personalized_curriculum?: Json | null
+          preferred_difficulty_progression?: string | null
+          preferred_learning_style?: string | null
+          processing_speed?: string | null
+          stress_indicators?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      progress_tracking: {
+        Row: {
+          assessment_frequency_days: number | null
+          challenge_completion_rate: number | null
+          consistency_score: number | null
+          created_at: string
+          cultural_competency: number | null
+          current_milestone_progress: number | null
+          estimated_milestone_date: string | null
+          goal_completion_rate: number | null
+          grammar_level: number | null
+          id: string
+          in_progress_competencies: Json | null
+          last_assessment_date: string | null
+          learning_velocity: number | null
+          listening_level: number | null
+          long_term_goals: Json | null
+          mastered_competencies: Json | null
+          milestones_achieved: Json | null
+          next_assessment_due: string | null
+          next_milestone: string | null
+          overall_proficiency: number | null
+          pronunciation_level: number | null
+          reading_level: number | null
+          short_term_goals: Json | null
+          speaking_level: number | null
+          strength_areas: Json | null
+          updated_at: string
+          user_id: string
+          vocabulary_level: number | null
+          weak_areas: Json | null
+          writing_level: number | null
+        }
+        Insert: {
+          assessment_frequency_days?: number | null
+          challenge_completion_rate?: number | null
+          consistency_score?: number | null
+          created_at?: string
+          cultural_competency?: number | null
+          current_milestone_progress?: number | null
+          estimated_milestone_date?: string | null
+          goal_completion_rate?: number | null
+          grammar_level?: number | null
+          id?: string
+          in_progress_competencies?: Json | null
+          last_assessment_date?: string | null
+          learning_velocity?: number | null
+          listening_level?: number | null
+          long_term_goals?: Json | null
+          mastered_competencies?: Json | null
+          milestones_achieved?: Json | null
+          next_assessment_due?: string | null
+          next_milestone?: string | null
+          overall_proficiency?: number | null
+          pronunciation_level?: number | null
+          reading_level?: number | null
+          short_term_goals?: Json | null
+          speaking_level?: number | null
+          strength_areas?: Json | null
+          updated_at?: string
+          user_id: string
+          vocabulary_level?: number | null
+          weak_areas?: Json | null
+          writing_level?: number | null
+        }
+        Update: {
+          assessment_frequency_days?: number | null
+          challenge_completion_rate?: number | null
+          consistency_score?: number | null
+          created_at?: string
+          cultural_competency?: number | null
+          current_milestone_progress?: number | null
+          estimated_milestone_date?: string | null
+          goal_completion_rate?: number | null
+          grammar_level?: number | null
+          id?: string
+          in_progress_competencies?: Json | null
+          last_assessment_date?: string | null
+          learning_velocity?: number | null
+          listening_level?: number | null
+          long_term_goals?: Json | null
+          mastered_competencies?: Json | null
+          milestones_achieved?: Json | null
+          next_assessment_due?: string | null
+          next_milestone?: string | null
+          overall_proficiency?: number | null
+          pronunciation_level?: number | null
+          reading_level?: number | null
+          short_term_goals?: Json | null
+          speaking_level?: number | null
+          strength_areas?: Json | null
+          updated_at?: string
+          user_id?: string
+          vocabulary_level?: number | null
+          weak_areas?: Json | null
+          writing_level?: number | null
         }
         Relationships: []
       }
