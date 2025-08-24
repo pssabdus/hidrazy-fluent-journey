@@ -223,6 +223,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state changed:', event, !!session);
+        
         setState(prev => ({
           ...prev,
           session,
@@ -233,6 +235,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Only check onboarding once when user signs in and we haven't checked yet
         if (event === 'SIGNED_IN' && session?.user && !hasCheckedOnboarding) {
           hasCheckedOnboarding = true;
+          console.log('Checking onboarding for user on auth state change...');
           
           // Only check if we're on the home page to avoid redirecting from other pages
           if (window.location.pathname === '/') {
@@ -244,13 +247,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                   .eq('id', session.user.id)
                   .single();
 
+                console.log('Auth state onboarding check:', { userData, userError });
+
                 if (!userError && userData && !userData.onboarding_completed) {
+                  console.log('Redirecting to onboarding from auth state...');
                   window.location.href = '/onboarding';
                 }
               } catch (error) {
-                console.error('Error checking onboarding status:', error);
+                console.error('Error checking onboarding status in auth state:', error);
               }
-            }, 500);
+            }, 1000);
           }
         }
       }
@@ -258,6 +264,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session check:', !!session);
       setState(prev => ({
         ...prev,
         session,

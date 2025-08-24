@@ -35,25 +35,27 @@ const HeroSection = () => {
           
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
-            <Button 
-              asChild
-              size="lg"
-              className="btn-hero text-lg px-12 py-6 animate-scale-in"
-            >
-              <Link to="/register" onClick={() => console.log('Start Learning Free link clicked')}>Start Learning Free</Link>
-            </Button>
+            <Link to="/register">
+              <Button 
+                size="lg"
+                className="btn-hero text-lg px-12 py-6 animate-scale-in"
+              >
+                Start Learning Free
+              </Button>
+            </Link>
             
             <Button 
-              asChild
               size="lg"
               variant="ghost"
               className="btn-glass text-lg px-12 py-6 animate-scale-in"
               style={{ animationDelay: '0.2s' }}
+              onClick={() => {
+                const demoSection = document.getElementById('demo');
+                demoSection?.scrollIntoView({ behavior: 'smooth' });
+              }}
             >
-              <Link to="#demo">
-                <Play className="w-5 h-5 mr-2" />
-                Watch Demo
-              </Link>
+              <Play className="w-5 h-5 mr-2" />
+              Watch Demo
             </Button>
           </div>
         </div>

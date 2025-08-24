@@ -44,20 +44,20 @@ const Header = () => {
             </Button>
 
             {/* Auth Buttons */}
-            <Button 
-              asChild
-              variant="outline" 
-              className="border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300"
-            >
-              <Link to="/login" onClick={() => console.log('Sign In link clicked')}>Sign In</Link>
-            </Button>
+            <Link to="/login">
+              <Button 
+                variant="outline" 
+                className="border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300"
+              >
+                Sign In
+              </Button>
+            </Link>
             
-            <Button 
-              asChild
-              className="btn-hero animate-scale-in"
-            >
-              <Link to="/register" onClick={() => console.log('Get Started link clicked')}>Get Started</Link>
-            </Button>
+            <Link to="/register">
+              <Button className="btn-hero animate-scale-in">
+                Get Started
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -85,17 +85,20 @@ const Header = () => {
                 <span>{language}</span>
               </Button>
               
-              <Button 
-                asChild
-                variant="outline" 
-                className="w-full border-primary text-primary"
-              >
-                <Link to="/login">Sign In</Link>
-              </Button>
+              <Link to="/login">
+                <Button 
+                  variant="outline" 
+                  className="w-full border-primary text-primary"
+                >
+                  Sign In
+                </Button>
+              </Link>
               
-              <Button asChild className="w-full btn-hero">
-                <Link to="/register">Get Started</Link>
-              </Button>
+              <Link to="/register">
+                <Button className="w-full btn-hero">
+                  Get Started
+                </Button>
+              </Link>
             </div>
           </div>
         )}
