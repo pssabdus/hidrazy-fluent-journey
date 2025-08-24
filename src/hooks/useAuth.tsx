@@ -9,6 +9,8 @@ interface AuthContextType extends AuthState {
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
   clearError: () => void;
+  subscriptionData: any;
+  refreshSubscription: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,6 +29,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     rateLimitExceeded: false,
     rateLimitReset: null,
   });
+  
+  const [subscriptionData, setSubscriptionData] = useState<any>(null);
+
+  const refreshSubscription = async () => {
+    if (!state.user) return;
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('check-subscription');
+      if (!error) {
+        setSubscriptionData(data);
+      }
+    } catch (error) {
+      console.error('Error checking subscription:', error);
+    }
+  };
 
   // Check rate limiting
   const checkRateLimit = (): boolean => {
@@ -211,6 +228,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           user: session?.user ?? null,
           loading: false
         }));
+
+        // Check subscription when user logs in
+        if (session?.user) {
+          setTimeout(() => {
+            refreshSubscription();
+          }, 500);
+        } else {
+          setSubscriptionData(null);
+        }
       }
     );
 
@@ -223,10 +249,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user: session?.user ?? null,
         loading: false
       }));
+
+      if (session?.user) {
+        setTimeout(() => {
+          refreshSubscription();
+        }, 500);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Auto-refresh subscription status every 30 seconds when user is active
+  useEffect(() => {
+    if (!state.user) return;
+
+    const interval = setInterval(() => {
+      refreshSubscription();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [state.user]);
 
   return (
     <AuthContext.Provider value={{
@@ -236,6 +279,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signOut,
       resetPassword,
       clearError,
+      subscriptionData,
+      refreshSubscription,
     }}>
       {children}
     </AuthContext.Provider>
