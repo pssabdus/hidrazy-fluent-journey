@@ -138,18 +138,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.setItem('hidrazy_remember_me', 'true');
       }
 
-      // Check if user needs onboarding
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('onboarding_completed')
-        .eq('id', data.user.id)
-        .single();
+      // Check if user needs onboarding (only for direct sign-in, not email confirmation)
+      try {
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('onboarding_completed')
+          .eq('id', data.user.id)
+          .single();
 
-      if (!userError && userData && !userData.onboarding_completed) {
-        // New user needs onboarding
-        window.location.href = '/onboarding';
-      } else {
-        // Existing user goes to home
+        if (!userError && userData && !userData.onboarding_completed) {
+          // New user needs onboarding
+          window.location.href = '/onboarding';
+        } else {
+          // Existing user goes to home
+          window.location.href = '/';
+        }
+      } catch (error) {
+        console.error('Error checking onboarding status:', error);
+        // Fallback to home page if there's an error
         window.location.href = '/';
       }
       return { error: null };
@@ -206,6 +212,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    let hasCheckedOnboarding = false;
+
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
@@ -216,21 +224,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           loading: false
         }));
 
-        // Handle email confirmation and first-time login
-        if (event === 'SIGNED_IN' && session?.user) {
-          // Defer the check to avoid potential conflicts
-          setTimeout(async () => {
-            const { data: userData, error: userError } = await supabase
-              .from('users')
-              .select('onboarding_completed')
-              .eq('id', session.user.id)
-              .single();
+        // Only check onboarding once when user signs in and we haven't checked yet
+        if (event === 'SIGNED_IN' && session?.user && !hasCheckedOnboarding) {
+          hasCheckedOnboarding = true;
+          
+          // Only check if we're on the home page to avoid redirecting from other pages
+          if (window.location.pathname === '/') {
+            setTimeout(async () => {
+              try {
+                const { data: userData, error: userError } = await supabase
+                  .from('users')
+                  .select('onboarding_completed')
+                  .eq('id', session.user.id)
+                  .single();
 
-            // Only redirect if we're on the home page and user needs onboarding
-            if (!userError && userData && !userData.onboarding_completed && window.location.pathname === '/') {
-              window.location.href = '/onboarding';
-            }
-          }, 100);
+                if (!userError && userData && !userData.onboarding_completed) {
+                  window.location.href = '/onboarding';
+                }
+              } catch (error) {
+                console.error('Error checking onboarding status:', error);
+              }
+            }, 500);
+          }
         }
       }
     );
