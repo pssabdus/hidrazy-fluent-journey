@@ -35,7 +35,14 @@ const HeroSection = () => {
           
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
-            <Link to="/register">
+            <Link 
+              to="/register" 
+              onClick={(e) => {
+                console.log('Start Learning Free button clicked');
+                console.log('Current pathname:', window.location.pathname);
+                console.log('Target:', e.currentTarget.getAttribute('href'));
+              }}
+            >
               <Button 
                 size="lg"
                 className="btn-hero text-lg px-12 py-6 animate-scale-in"

@@ -44,7 +44,14 @@ const Header = () => {
             </Button>
 
             {/* Auth Buttons */}
-            <Link to="/login">
+            <Link 
+              to="/login" 
+              onClick={(e) => {
+                console.log('Sign In link clicked');
+                console.log('Current pathname:', window.location.pathname);
+                console.log('Target:', e.currentTarget.getAttribute('href'));
+              }}
+            >
               <Button 
                 variant="outline" 
                 className="border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300"
@@ -53,7 +60,14 @@ const Header = () => {
               </Button>
             </Link>
             
-            <Link to="/register">
+            <Link 
+              to="/register" 
+              onClick={(e) => {
+                console.log('Get Started button clicked');
+                console.log('Current pathname:', window.location.pathname);
+                console.log('Target:', e.currentTarget.getAttribute('href'));
+              }}
+            >
               <Button className="btn-hero animate-scale-in">
                 Get Started
               </Button>
@@ -85,7 +99,13 @@ const Header = () => {
                 <span>{language}</span>
               </Button>
               
-              <Link to="/login">
+              <Link 
+                to="/login"
+                onClick={(e) => {
+                  console.log('Mobile Sign In link clicked');
+                  console.log('Current pathname:', window.location.pathname);
+                }}
+              >
                 <Button 
                   variant="outline" 
                   className="w-full border-primary text-primary"
@@ -94,7 +114,13 @@ const Header = () => {
                 </Button>
               </Link>
               
-              <Link to="/register">
+              <Link 
+                to="/register"
+                onClick={(e) => {
+                  console.log('Mobile Get Started button clicked');
+                  console.log('Current pathname:', window.location.pathname);
+                }}
+              >
                 <Button className="w-full btn-hero">
                   Get Started
                 </Button>
