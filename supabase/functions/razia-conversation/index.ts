@@ -177,7 +177,6 @@ async function generateRaziaResponse({ userMessage, userContext, conversationHis
       model: 'gpt-5-2025-08-07',
       messages,
       max_completion_tokens: isVoice ? 300 : 600,
-      temperature: 0.8, // Higher creativity for personality
       top_p: 0.9,
       frequency_penalty: 0.1,
       presence_penalty: 0.1
@@ -185,7 +184,8 @@ async function generateRaziaResponse({ userMessage, userContext, conversationHis
   });
 
   if (!response.ok) {
-    console.error('[RAZIA-CONVERSATION] OpenAI API error:', await response.text());
+    const errorText = await response.text();
+    console.error('[RAZIA-CONVERSATION] OpenAI API error:', errorText);
     throw new Error('Failed to generate AI response');
   }
 

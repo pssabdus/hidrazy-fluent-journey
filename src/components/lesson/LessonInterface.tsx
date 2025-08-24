@@ -211,17 +211,21 @@ export function LessonInterface({
     setIsRaziaThinking(true);
 
     try {
-      // Generate AI response
+      // Generate AI response using the updated razia-conversation function
       const { data: aiResponse, error: aiError } = await supabase.functions.invoke('razia-conversation', {
         body: {
-          userMessage: userInput,
-          lessonType,
-          lessonContext: {
-            title,
-            difficulty,
-            progress
-          },
-          conversationHistory: messages.slice(-5) // Last 5 messages for context
+          message: userInput,
+          conversationType: 'lesson_practice',
+          isVoice: false,
+          options: {
+            lessonType,
+            lessonContext: {
+              title,
+              difficulty,
+              progress
+            },
+            conversationHistory: messages.slice(-5) // Last 5 messages for context
+          }
         }
       });
 
@@ -233,9 +237,9 @@ export function LessonInterface({
       console.log('Generating audio for Razia response...');
       const { data: audioData, error: audioError } = await supabase.functions.invoke('text-to-speech', {
         body: {
-          text: aiResponse.message,
+          text: aiResponse.response,
           voice: 'EXAVITQu4vr4xnSDxMaL', // Razia's voice ID from ElevenLabs
-          emotion: aiResponse.emotion || 'neutral'
+          emotion: 'encouraging'
         }
       });
 
@@ -248,10 +252,10 @@ export function LessonInterface({
       const raziaMessage: ChatMessage = {
         id: Date.now().toString(),
         type: 'razia',
-        content: aiResponse.message,
+        content: aiResponse.response,
         timestamp: Date.now(),
         audioUrl: audioData?.audioUrl,
-        corrections: aiResponse.corrections
+        corrections: aiResponse.analysis?.grammar_errors || []
       };
 
       setMessages(prev => [...prev, raziaMessage]);
@@ -263,7 +267,7 @@ export function LessonInterface({
       }
 
       // Add system message if there are corrections
-      if (aiResponse.corrections && aiResponse.corrections.length > 0) {
+      if (aiResponse.analysis?.grammar_errors && aiResponse.analysis.grammar_errors.length > 0) {
         setTimeout(() => {
           const systemMessage: ChatMessage = {
             id: (Date.now() + 1).toString(),
