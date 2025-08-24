@@ -15,6 +15,8 @@ import { RaziaConversationInterface } from '../conversation/RaziaConversationInt
 import { Scenario } from '@/types/roleplay';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ProgressDashboard } from '../progress/ProgressDashboard';
+import { type ProgressAnalytics } from '@/types/progress';
 
 interface UserData {
   learning_goal: string;
@@ -24,7 +26,7 @@ interface UserData {
   subscription_status: string;
 }
 
-type TabType = 'home' | 'journey' | 'roleplay' | 'exercises' | 'razia' | 'ielts' | 'profile';
+type TabType = 'home' | 'journey' | 'roleplay' | 'exercises' | 'razia' | 'progress' | 'ielts' | 'profile';
 
 export function DashboardLayout() {
   const { user } = useAuth();
@@ -35,6 +37,153 @@ export function DashboardLayout() {
   const [loading, setLoading] = useState(true);
   const [streak, setStreak] = useState(7); // Mock data
   const [currentProgress, setCurrentProgress] = useState(65); // Mock data
+  
+  // Mock progress data
+  const mockProgressData: ProgressAnalytics = {
+    skillProgress: {
+      speaking: 75,
+      listening: 82,
+      reading: 68,
+      writing: 71
+    },
+    weeklyActivity: [
+      { date: '2024-01-15', studyMinutes: 45, lessonsCompleted: 3, conversationCount: 2, achievementUnlocks: 1 },
+      { date: '2024-01-16', studyMinutes: 30, lessonsCompleted: 2, conversationCount: 1, achievementUnlocks: 0 },
+      { date: '2024-01-17', studyMinutes: 60, lessonsCompleted: 4, conversationCount: 3, achievementUnlocks: 2 },
+      { date: '2024-01-18', studyMinutes: 25, lessonsCompleted: 1, conversationCount: 1, achievementUnlocks: 0 },
+      { date: '2024-01-19', studyMinutes: 40, lessonsCompleted: 3, conversationCount: 2, achievementUnlocks: 1 },
+      { date: '2024-01-20', studyMinutes: 55, lessonsCompleted: 4, conversationCount: 2, achievementUnlocks: 1 },
+      { date: '2024-01-21', studyMinutes: 35, lessonsCompleted: 2, conversationCount: 1, achievementUnlocks: 0 }
+    ],
+    vocabularyStats: {
+      totalWords: 1250,
+      masteredWords: 856,
+      recentlyAdded: [
+        { word: 'sophisticated', definition: 'complex or refined', level: 'advanced', masteryLevel: 85, nextReview: new Date() },
+        { word: 'ambient', definition: 'surrounding environment', level: 'intermediate', masteryLevel: 70, nextReview: new Date() },
+        { word: 'collaborate', definition: 'work together', level: 'intermediate', masteryLevel: 92, nextReview: new Date() }
+      ],
+      challengingWords: [
+        { word: 'paradigm', definition: 'a typical example or pattern', level: 'advanced', masteryLevel: 45, nextReview: new Date() },
+        { word: 'ubiquitous', definition: 'present everywhere', level: 'advanced', masteryLevel: 32, nextReview: new Date() }
+      ]
+    },
+    conversationStats: {
+      totalConversations: 47,
+      averageLength: 480, // seconds
+      topicsDiscussed: ['Daily Life', 'Work', 'Travel', 'Technology', 'Culture', 'Food'],
+      fluencyImprovement: [65, 68, 72, 75, 78, 82, 85],
+      favoriteTypes: {
+        'Free Chat': 18,
+        'Lesson Practice': 12,
+        'Role Play': 10,
+        'Assessment': 5,
+        'Cultural Bridge': 2
+      },
+      pronunciationScores: [70, 72, 75, 78, 80, 83, 85]
+    },
+    achievements: [
+      { 
+        id: '1', 
+        title: 'First Conversation', 
+        description: 'Complete your first chat with Razia', 
+        icon: '💬', 
+        rarity: 'common', 
+        unlockedAt: new Date('2024-01-10') 
+      },
+      { 
+        id: '2', 
+        title: 'Week Warrior', 
+        description: 'Study for 7 consecutive days', 
+        icon: '🔥', 
+        rarity: 'rare', 
+        unlockedAt: new Date('2024-01-17') 
+      },
+      { 
+        id: '3', 
+        title: 'Vocabulary Master', 
+        description: 'Learn 1000 new words', 
+        icon: '📚', 
+        rarity: 'epic', 
+        unlockedAt: new Date('2024-01-20') 
+      },
+      { 
+        id: '4', 
+        title: 'Fluency Champion', 
+        description: 'Achieve 90% fluency score', 
+        icon: '🏆', 
+        rarity: 'legendary', 
+        progress: 85, 
+        maxProgress: 90 
+      }
+    ],
+    learningGoal: {
+      type: 'conversation',
+      currentScore: 75,
+      targetScore: 90,
+      estimatedCompletion: new Date('2024-03-15'),
+      milestones: [
+        { 
+          id: '1', 
+          title: 'Basic Conversations', 
+          description: 'Handle everyday conversations confidently',
+          targetValue: 50,
+          currentValue: 50,
+          completed: true
+        },
+        { 
+          id: '2', 
+          title: 'Complex Topics', 
+          description: 'Discuss complex topics with ease',
+          targetValue: 75,
+          currentValue: 75,
+          completed: true
+        },
+        { 
+          id: '3', 
+          title: 'Native-like Fluency', 
+          description: 'Achieve near-native conversation skills',
+          targetValue: 90,
+          currentValue: 75,
+          completed: false
+        }
+      ]
+    },
+    studyStreak: {
+      currentStreak: 7,
+      longestStreak: 15,
+      streakData: [
+        { date: '2024-01-15', studyMinutes: 45, intensity: 'medium' },
+        { date: '2024-01-16', studyMinutes: 30, intensity: 'light' },
+        { date: '2024-01-17', studyMinutes: 60, intensity: 'high' },
+        { date: '2024-01-18', studyMinutes: 25, intensity: 'light' },
+        { date: '2024-01-19', studyMinutes: 40, intensity: 'medium' },
+        { date: '2024-01-20', studyMinutes: 55, intensity: 'high' },
+        { date: '2024-01-21', studyMinutes: 35, intensity: 'medium' }
+      ]
+    },
+    overallCompletion: 74,
+    strengthsWeaknesses: {
+      strengths: [
+        'Excellent listening comprehension',
+        'Strong vocabulary retention',
+        'Confident in daily conversations',
+        'Good pronunciation accuracy'
+      ],
+      weaknesses: [
+        'Complex grammar structures',
+        'Academic writing skills',
+        'Formal presentation skills',
+        'Idiomatic expressions'
+      ],
+      recommendations: [
+        'Focus on advanced grammar exercises to improve structure understanding',
+        'Practice formal writing with academic topics',
+        'Join advanced conversation groups for complex discussions',
+        'Study common idioms and phrasal verbs for natural speech'
+      ]
+    }
+  };
 
   useEffect(() => {
     if (user) {
@@ -192,6 +341,12 @@ export function DashboardLayout() {
                 userId={user?.id || ''}
                 userName={user?.email?.split('@')[0] || 'Student'}
                 initialType="free-chat"
+              />
+            )}
+            {activeTab === 'progress' && (
+              <ProgressDashboard
+                userName={user?.email?.split('@')[0] || 'Student'}
+                data={mockProgressData}
               />
             )}
             {(activeTab === 'journey' || activeTab === 'profile') && (
