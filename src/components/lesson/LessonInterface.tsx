@@ -29,14 +29,49 @@ export function LessonInterface({
   onExit
 }: LessonInterfaceProps) {
   const [progress, setProgress] = useState(0);
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: '1',
-      type: 'razia',
-      content: `Hello! I'm Razia, your English teacher. Welcome to today's ${lessonType} lesson. I'm here to help you practice and improve your English skills. Are you ready to begin?`,
-      timestamp: Date.now(),
-    }
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  
+  // Initialize welcome message with audio
+  useEffect(() => {
+    const initializeWelcomeMessage = async () => {
+      const welcomeText = `Hello! I'm Razia, your English teacher. Welcome to today's ${lessonType} lesson. I'm here to help you practice and improve your English skills. Are you ready to begin?`;
+      
+      console.log('Generating welcome audio...');
+      const { data: audioData, error: audioError } = await supabase.functions.invoke('text-to-speech', {
+        body: {
+          text: welcomeText,
+          voice: 'EXAVITQu4vr4xnSDxMaL',
+          emotion: 'encouraging'
+        }
+      });
+
+      if (audioError) {
+        console.error('Welcome audio generation failed:', audioError);
+      } else {
+        console.log('Welcome audio generated successfully');
+      }
+
+      const welcomeMessage: ChatMessage = {
+        id: '1',
+        type: 'razia',
+        content: welcomeText,
+        timestamp: Date.now(),
+        audioUrl: audioData?.audioUrl
+      };
+
+      setMessages([welcomeMessage]);
+
+      // Auto-play welcome message
+      if (audioData?.audioUrl) {
+        console.log('Playing welcome audio...');
+        setTimeout(() => {
+          playAudio(audioData.audioUrl);
+        }, 500); // Small delay to ensure component is ready
+      }
+    };
+
+    initializeWelcomeMessage();
+  }, [lessonType]);
   
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
