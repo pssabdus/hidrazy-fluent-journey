@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/hooks/useAuth';
 import { PremiumProvider } from '@/hooks/usePremium';
+import { ConversationProvider } from '@/contexts/ConversationContext';
 import App from './App.tsx';
 import './index.css';
 
@@ -16,8 +17,10 @@ createRoot(document.getElementById('root')!).render(
       <BrowserRouter>
         <AuthProvider>
           <PremiumProvider>
-            <App />
-            <Toaster />
+            <ConversationProvider>
+              <App />
+              <Toaster />
+            </ConversationProvider>
           </PremiumProvider>
         </AuthProvider>
       </BrowserRouter>

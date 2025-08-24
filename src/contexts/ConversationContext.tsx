@@ -69,7 +69,7 @@ export function ConversationProvider({ children }: { children: React.ReactNode }
     
     // Initialize speech recognition
     if ('webkitSpeechRecognition' in window) {
-      recognition.current = new webkitSpeechRecognition();
+      recognition.current = new (window as any).webkitSpeechRecognition();
       recognition.current.continuous = false;
       recognition.current.interimResults = false;
       recognition.current.lang = 'en-US';
