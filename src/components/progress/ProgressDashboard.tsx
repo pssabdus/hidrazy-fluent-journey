@@ -27,6 +27,9 @@ import { AchievementGallery } from './AchievementGallery';
 import { StrengthWeaknessAnalysis } from './StrengthWeaknessAnalysis';
 import { StudyStreakVisualization } from './StudyStreakVisualization';
 import { GoalProgress } from './GoalProgress';
+import { AdvancedAnalyticsDashboard } from '@/components/analytics/AdvancedAnalyticsDashboard';
+import { LearningComparisonChart } from '@/components/analytics/LearningComparisonChart';
+import { AIRecommendationEngine } from '@/components/analytics/AIRecommendationEngine';
 import { type ProgressAnalytics } from '@/types/progress';
 
 interface ProgressDashboardProps {
@@ -142,7 +145,7 @@ export function ProgressDashboard({ userName, userAvatar, data }: ProgressDashbo
 
         {/* Progress Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10 bg-card">
+          <TabsList className="grid w-full grid-cols-6 lg:grid-cols-13 bg-card text-xs">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="skills">Skills</TabsTrigger>
             <TabsTrigger value="journey">Journey</TabsTrigger>
@@ -150,6 +153,9 @@ export function ProgressDashboard({ userName, userAvatar, data }: ProgressDashbo
             <TabsTrigger value="vocabulary">Vocabulary</TabsTrigger>
             <TabsTrigger value="conversations">Conversations</TabsTrigger>
             <TabsTrigger value="achievements">Achievements</TabsTrigger>
+            <TabsTrigger value="analytics">AI Analytics</TabsTrigger>
+            <TabsTrigger value="comparison">Peer Compare</TabsTrigger>
+            <TabsTrigger value="recommendations">AI Coach</TabsTrigger>
             <TabsTrigger value="analysis">Analysis</TabsTrigger>
             <TabsTrigger value="streak">Streak</TabsTrigger>
             <TabsTrigger value="goals">Goals</TabsTrigger>
@@ -230,6 +236,36 @@ export function ProgressDashboard({ userName, userAvatar, data }: ProgressDashbo
                 exit={{ opacity: 0, y: -20 }}
               >
                 <AchievementGallery achievements={data.achievements} />
+              </motion.div>
+            </TabsContent>
+
+            <TabsContent value="analytics">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
+                <AdvancedAnalyticsDashboard />
+              </motion.div>
+            </TabsContent>
+
+            <TabsContent value="comparison">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
+                <LearningComparisonChart />
+              </motion.div>
+            </TabsContent>
+
+            <TabsContent value="recommendations">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
+                <AIRecommendationEngine />
               </motion.div>
             </TabsContent>
 
