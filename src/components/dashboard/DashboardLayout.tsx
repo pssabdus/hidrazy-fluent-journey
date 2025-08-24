@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { AppSidebar } from './AppSidebar';
 import { DashboardHeader } from './DashboardHeader';
-import { DashboardNavigation } from './DashboardNavigation';
 import { GeneralEnglishDashboard } from './dashboards/GeneralEnglishDashboard';
 import { IELTSDashboard } from './dashboards/IELTSDashboard';
 import { BusinessEnglishDashboard } from './dashboards/BusinessEnglishDashboard';
@@ -302,81 +303,94 @@ export function DashboardLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <DashboardHeader 
-        streak={streak} 
-        subscriptionTier={userData?.subscription_status === 'premium' ? 'premium' : 'free'} 
-      />
-      
-      <main className="max-w-4xl mx-auto px-4 py-6">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            {activeTab === 'home' && renderDashboard()}
-            {activeTab === 'roleplay' && !isInRolePlay && (
-              <RolePlayHub 
-                onStartScenario={(scenario) => {
-                  setSelectedScenario(scenario);
-                  setIsInRolePlay(true);
-                }}
-                isPremiumUser={userData?.subscription_status === 'premium'}
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-gray-50">
+        <AppSidebar 
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          showIELTS={userData?.learning_goal === 'ielts'}
+        />
+        
+        <div className="flex-1 flex flex-col">
+          {/* Header with Sidebar Trigger */}
+          <header className="h-16 flex items-center border-b bg-white px-4">
+            <SidebarTrigger className="mr-4" />
+            <div className="flex-1">
+              <DashboardHeader 
+                streak={streak} 
+                subscriptionTier={userData?.subscription_status === 'premium' ? 'premium' : 'free'} 
               />
-            )}
-            {activeTab === 'roleplay' && isInRolePlay && selectedScenario && (
-              <RolePlayInterface 
-                scenario={selectedScenario}
-                onExit={() => {
-                  setIsInRolePlay(false);
-                  setSelectedScenario(null);
-                }}
-              />
-            )}
-            {activeTab === 'exercises' && (
-              <ExerciseHub />
-            )}
-            {activeTab === 'razia' && (
-              <RaziaConversationInterface
-                userId={user?.id || ''}
-                userName={user?.email?.split('@')[0] || 'Student'}
-                initialType="free-chat"
-              />
-            )}
-            {activeTab === 'progress' && (
-              <ProgressDashboard
-                userName={user?.email?.split('@')[0] || 'Student'}
-                data={mockProgressData}
-              />
-            )}
-            {activeTab === 'analytics' && (
-              <AdvancedAnalyticsDashboard />
-            )}
-            {activeTab === 'offline' && (
-              <OfflineLearningHub />
-            )}
-            {activeTab === 'ielts' && (
-              <IELTSMasteryHub />
-            )}
-            {(activeTab === 'journey' || activeTab === 'profile') && (
-              <div className="text-center py-12">
-                <div className="text-6xl mb-4">🚧</div>
-                <h2 className="text-2xl font-bold mb-2">Coming Soon!</h2>
-                <p className="text-muted-foreground">This section is under development. Stay tuned for amazing features!</p>
-              </div>
-            )}
-          </motion.div>
-        </AnimatePresence>
-      </main>
+            </div>
+          </header>
 
-      <DashboardNavigation
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        showIELTS={userData?.learning_goal === 'ielts'}
-      />
-    </div>
+          {/* Main Content */}
+          <main className="flex-1 p-6 overflow-auto">
+            <div className="max-w-4xl mx-auto">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeTab}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {activeTab === 'home' && renderDashboard()}
+                  {activeTab === 'roleplay' && !isInRolePlay && (
+                    <RolePlayHub 
+                      onStartScenario={(scenario) => {
+                        setSelectedScenario(scenario);
+                        setIsInRolePlay(true);
+                      }}
+                      isPremiumUser={userData?.subscription_status === 'premium'}
+                    />
+                  )}
+                  {activeTab === 'roleplay' && isInRolePlay && selectedScenario && (
+                    <RolePlayInterface 
+                      scenario={selectedScenario}
+                      onExit={() => {
+                        setIsInRolePlay(false);
+                        setSelectedScenario(null);
+                      }}
+                    />
+                  )}
+                  {activeTab === 'exercises' && (
+                    <ExerciseHub />
+                  )}
+                  {activeTab === 'razia' && (
+                    <RaziaConversationInterface
+                      userId={user?.id || ''}
+                      userName={user?.email?.split('@')[0] || 'Student'}
+                      initialType="free-chat"
+                    />
+                  )}
+                  {activeTab === 'progress' && (
+                    <ProgressDashboard
+                      userName={user?.email?.split('@')[0] || 'Student'}
+                      data={mockProgressData}
+                    />
+                  )}
+                  {activeTab === 'analytics' && (
+                    <AdvancedAnalyticsDashboard />
+                  )}
+                  {activeTab === 'offline' && (
+                    <OfflineLearningHub />
+                  )}
+                  {activeTab === 'ielts' && (
+                    <IELTSMasteryHub />
+                  )}
+                  {(activeTab === 'journey' || activeTab === 'profile') && (
+                    <div className="text-center py-12">
+                      <div className="text-6xl mb-4">🚧</div>
+                      <h2 className="text-2xl font-bold mb-2">Coming Soon!</h2>
+                      <p className="text-muted-foreground">This section is under development. Stay tuned for amazing features!</p>
+                    </div>
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </main>
+        </div>
+      </div>
+    </SidebarProvider>
   );
 }
