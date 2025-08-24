@@ -107,6 +107,33 @@ export type Database = {
         }
         Relationships: []
       }
+      analytics_events: {
+        Row: {
+          created_at: string
+          event_data: Json | null
+          event_type: string
+          id: string
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       assessments: {
         Row: {
           assessment_data_json: Json | null
@@ -436,6 +463,36 @@ export type Database = {
           },
         ]
       }
+      email_logs: {
+        Row: {
+          created_at: string
+          email_id: string | null
+          email_type: string
+          id: string
+          recipient: string
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email_id?: string | null
+          email_type: string
+          id?: string
+          recipient: string
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email_id?: string | null
+          email_type?: string
+          id?: string
+          recipient?: string
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       feature_usage: {
         Row: {
           advanced_analytics_views: number | null
@@ -624,6 +681,44 @@ export type Database = {
           weekly_progress?: Json | null
         }
         Relationships: []
+      }
+      lesson_completions: {
+        Row: {
+          completed_at: string
+          id: string
+          lesson_id: string
+          notes: string | null
+          score: number | null
+          time_spent: number | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          id?: string
+          lesson_id: string
+          notes?: string | null
+          score?: number | null
+          time_spent?: number | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          id?: string
+          lesson_id?: string
+          notes?: string | null
+          score?: number | null
+          time_spent?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_completions_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       lesson_progress: {
         Row: {

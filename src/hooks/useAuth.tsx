@@ -110,6 +110,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       clearAttempts();
       setState(prev => ({ ...prev, loading: false }));
       
+      // Send welcome email
+      try {
+        await supabase.functions.invoke('send-welcome-email', {
+          body: {
+            type: 'welcome',
+            email,
+            name: email.split('@')[0] // Use email prefix as name fallback
+          }
+        });
+      } catch (emailError) {
+        console.error('Failed to send welcome email:', emailError);
+        // Don't throw error, registration was successful
+      }
+      
       toast({
         title: "Account created successfully!",
         description: "Please check your email to verify your account.",
@@ -201,6 +215,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) {
         setState(prev => ({ ...prev, loading: false, error: { message: error.message } }));
         return { error: { message: error.message } };
+      }
+
+      // Send password reset email
+      try {
+        await supabase.functions.invoke('send-welcome-email', {
+          body: {
+            type: 'password_reset',
+            email,
+            resetLink: `${window.location.origin}/reset-password`
+          }
+        });
+      } catch (emailError) {
+        console.error('Failed to send password reset email:', emailError);
+        // Don't throw error, reset request was successful
       }
 
       setState(prev => ({ ...prev, loading: false }));
