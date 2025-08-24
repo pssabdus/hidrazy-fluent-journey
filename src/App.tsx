@@ -9,6 +9,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
+import Premium from "./pages/Premium";
+import Subscription from "./pages/Subscription";
 import { PricingPage } from '@/components/subscription/PricingPage';
 import { PaymentSuccess } from '@/components/subscription/PaymentSuccess';
 import { SubscriptionManagement } from '@/components/subscription/SubscriptionManagement';
@@ -27,9 +29,11 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/premium" element={<Premium />} />
+            <Route path="/subscription" element={<Subscription />} />
             <Route path="/pricing" element={<PricingPage />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
-            <Route path="/subscription" element={<SubscriptionManagement />} />
+            <Route path="/subscription-management" element={<SubscriptionManagement />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

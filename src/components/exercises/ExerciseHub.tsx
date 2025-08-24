@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { LessonPlayer } from '@/components/exercises/LessonPlayer';
 import { ExerciseRenderer } from '@/components/exercises/ExerciseRenderer';
 import { BaseExercise, VocabularyExercise } from '@/types/exercises';
+import { usePremium } from '@/hooks/usePremium';
+import { PremiumGate } from '@/components/premium/PremiumGate';
 
 interface Chapter {
   id: string;
@@ -24,6 +26,7 @@ export function ExerciseHub() {
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  const { isFeatureAvailable, canUseFeature } = usePremium();
 
   // Mock exercise data
   const mockVocabularyExercise: VocabularyExercise = {
@@ -125,7 +128,8 @@ export function ExerciseHub() {
       description: 'Learn new words with interactive flashcards',
       icon: Book,
       color: 'bg-blue-500',
-      exercises: [mockVocabularyExercise]
+      exercises: [mockVocabularyExercise],
+      isPremium: false
     },
     {
       id: 'grammar',
@@ -133,7 +137,8 @@ export function ExerciseHub() {
       description: 'Master English grammar with interactive exercises',
       icon: Target,
       color: 'bg-green-500',
-      exercises: [mockGrammarExercise]
+      exercises: [mockGrammarExercise],
+      isPremium: false
     },
     {
       id: 'listening',
@@ -141,7 +146,9 @@ export function ExerciseHub() {
       description: 'Improve comprehension with audio exercises',
       icon: Headphones,
       color: 'bg-purple-500',
-      exercises: [mockListeningExercise]
+      exercises: [mockListeningExercise],
+      isPremium: true,
+      premiumFeature: 'advanced_analytics'
     },
     {
       id: 'speaking',
@@ -149,7 +156,9 @@ export function ExerciseHub() {
       description: 'Practice pronunciation and fluency',
       icon: Mic,
       color: 'bg-orange-500',
-      exercises: [mockSpeakingExercise]
+      exercises: [mockSpeakingExercise],
+      isPremium: true,
+      premiumFeature: 'advanced_analytics'
     }
   ];
 
@@ -261,19 +270,39 @@ export function ExerciseHub() {
                         <Badge variant="outline">
                           {type.exercises[0].estimatedDuration}min
                         </Badge>
+                        {type.isPremium && (
+                          <Badge className="bg-gradient-to-r from-primary to-accent text-white">
+                            Premium
+                          </Badge>
+                        )}
                       </div>
                       <div className="text-sm text-green-600 font-medium">
                         +{type.exercises[0].points} XP
                       </div>
                     </div>
 
-                    <Button 
-                      className="w-full"
-                      onClick={() => startExercise(type.id)}
-                    >
-                      <Play className="h-4 w-4 mr-2" />
-                      Start Exercise
-                    </Button>
+                    {type.isPremium ? (
+                      <PremiumGate 
+                        featureId={type.premiumFeature!}
+                        showPreview={false}
+                      >
+                        <Button 
+                          className="w-full"
+                          onClick={() => startExercise(type.id)}
+                        >
+                          <Play className="h-4 w-4 mr-2" />
+                          Start Exercise
+                        </Button>
+                      </PremiumGate>
+                    ) : (
+                      <Button 
+                        className="w-full"
+                        onClick={() => startExercise(type.id)}
+                      >
+                        <Play className="h-4 w-4 mr-2" />
+                        Start Exercise
+                      </Button>
+                    )}
                   </CardContent>
                 </Card>
               </motion.div>

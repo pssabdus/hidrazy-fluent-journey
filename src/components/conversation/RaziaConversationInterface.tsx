@@ -19,6 +19,8 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useRaziaConversation } from '@/hooks/useRaziaConversation';
 import { ConversationMessage } from '@/types/conversation';
+import { usePremium } from '@/hooks/usePremium';
+import { PremiumGate } from '@/components/premium/PremiumGate';
 
 interface RaziaConversationInterfaceProps {
   userId: string;
@@ -35,6 +37,7 @@ export function RaziaConversationInterface({
 }: RaziaConversationInterfaceProps) {
   const [messageInput, setMessageInput] = useState('');
   const [showSettings, setShowSettings] = useState(false);
+  const { canUseFeature, recordFeatureUsage, getRemainingUsage } = usePremium();
 
   const { state, actions } = useRaziaConversation({
     userId,
@@ -56,6 +59,12 @@ export function RaziaConversationInterface({
 
   const handleSendMessage = async () => {
     if (!messageInput.trim()) return;
+    
+    // Check premium limits for conversations
+    const canUse = await recordFeatureUsage('unlimited_conversations');
+    if (!canUse) {
+      return; // Premium gate will handle the upgrade prompt
+    }
     
     await actions.sendMessage(messageInput);
     setMessageInput('');
@@ -170,10 +179,21 @@ export function RaziaConversationInterface({
     return null;
   };
 
+  const remainingConversations = getRemainingUsage('unlimited_conversations');
+  const canStartConversation = canUseFeature('unlimited_conversations');
+
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      {/* Header */}
-      <div className="bg-white/95 backdrop-blur-sm border-b border-gray-200 p-4">
+    <PremiumGate 
+      featureId="unlimited_conversations"
+      showPreview={true}
+      customMessage={remainingConversations > 0 ? 
+        `${remainingConversations} conversations left today` : 
+        'Daily conversation limit reached'
+      }
+    >
+      <div className="flex flex-col h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        {/* Header */}
+        <div className="bg-white/95 backdrop-blur-sm border-b border-gray-200 p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xl">
@@ -223,9 +243,14 @@ export function RaziaConversationInterface({
           <Badge variant="outline">
             {state.context.conversationType.replace('-', ' ')}
           </Badge>
-          <span className="text-xs text-gray-500">
-            {state.context.sessionMetrics.messagesExchanged} messages exchanged
-          </span>
+              <span className="text-xs text-gray-500">
+                {state.context.sessionMetrics.messagesExchanged} messages exchanged
+              </span>
+              {!canStartConversation && remainingConversations > 0 && (
+                <Badge variant="secondary" className="ml-2">
+                  {remainingConversations} left today
+                </Badge>
+              )}
         </div>
       </div>
 
@@ -416,6 +441,7 @@ export function RaziaConversationInterface({
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </PremiumGate>
   );
 }

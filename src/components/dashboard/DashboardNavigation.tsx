@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Home, Map, Drama, Award, User, Zap, MessageCircle, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { UsageTracker } from '@/components/premium/UsageTracker';
 
 interface DashboardNavigationProps {
   activeTab: 'home' | 'journey' | 'roleplay' | 'exercises' | 'razia' | 'progress' | 'ielts' | 'profile';
@@ -21,9 +22,13 @@ export function DashboardNavigation({ activeTab, onTabChange, showIELTS }: Dashb
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-gray-200/20 shadow-lg">
-      <div className="max-w-md mx-auto px-4">
-        <div className="flex items-center justify-around py-2">
+    <div className="fixed bottom-0 left-0 right-0 z-50">
+      {/* Usage Tracker for Free Users */}
+      <UsageTracker />
+      
+      <nav className="bg-white/95 backdrop-blur-xl border-t border-gray-200/20 shadow-lg">
+        <div className="max-w-md mx-auto px-4">
+          <div className="flex items-center justify-around py-2">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -61,6 +66,7 @@ export function DashboardNavigation({ activeTab, onTabChange, showIELTS }: Dashb
           })}
         </div>
       </div>
-    </nav>
+      </nav>
+    </div>
   );
 }
