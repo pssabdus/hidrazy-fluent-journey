@@ -163,7 +163,32 @@ export function DashboardLayout() {
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
           >
-            {renderDashboard()}
+            {activeTab === 'home' && renderDashboard()}
+            {activeTab === 'roleplay' && !isInRolePlay && (
+              <RolePlayHub 
+                onStartScenario={(scenario) => {
+                  setSelectedScenario(scenario);
+                  setIsInRolePlay(true);
+                }}
+                isPremiumUser={userData?.subscription_status === 'premium'}
+              />
+            )}
+            {activeTab === 'roleplay' && isInRolePlay && selectedScenario && (
+              <RolePlayInterface 
+                scenario={selectedScenario}
+                onExit={() => {
+                  setIsInRolePlay(false);
+                  setSelectedScenario(null);
+                }}
+              />
+            )}
+            {(activeTab === 'journey' || activeTab === 'profile') && (
+              <div className="text-center py-12">
+                <div className="text-6xl mb-4">🚧</div>
+                <h2 className="text-2xl font-bold mb-2">Coming Soon!</h2>
+                <p className="text-muted-foreground">This section is under development. Stay tuned for amazing features!</p>
+              </div>
+            )}
           </motion.div>
         </AnimatePresence>
       </main>
