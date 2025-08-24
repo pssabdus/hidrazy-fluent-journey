@@ -195,6 +195,7 @@ export function LessonInterface({
       setIsRaziaThinking(false);
 
       // Generate speech from text
+      console.log('Generating audio for Razia response...');
       const { data: audioData, error: audioError } = await supabase.functions.invoke('text-to-speech', {
         body: {
           text: aiResponse.message,
@@ -204,7 +205,9 @@ export function LessonInterface({
       });
 
       if (audioError) {
-        console.warn('Audio generation failed:', audioError);
+        console.error('Audio generation failed:', audioError);
+      } else {
+        console.log('Audio generated successfully:', !!audioData?.audioUrl);
       }
 
       const raziaMessage: ChatMessage = {
@@ -220,6 +223,7 @@ export function LessonInterface({
 
       // Auto-play audio if available
       if (audioData?.audioUrl) {
+        console.log('Playing Razia audio...');
         playAudio(audioData.audioUrl);
       }
 
