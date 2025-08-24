@@ -12,12 +12,12 @@ import { TravelEnglishDashboard } from './dashboards/TravelEnglishDashboard';
 import { RolePlayHub } from '../roleplay/RolePlayHub';
 import { RolePlayInterface } from '../roleplay/RolePlayInterface';
 import { ExerciseHub } from '../exercises/ExerciseHub';
-import { RaziaConversationInterface } from '../conversation/RaziaConversationInterface';
+import ComprehensiveProgressDashboard from '../progress/ComprehensiveProgressDashboard';
+import { AdvancedAnalyticsDashboard } from '../analytics/AdvancedAnalyticsDashboard';
+import { PremiumFeaturesShowcase } from '../premium/PremiumFeaturesShowcase';
 import { Scenario } from '@/types/roleplay';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ProgressDashboard } from '../progress/ProgressDashboard';
-import { AdvancedAnalyticsDashboard } from '../analytics/AdvancedAnalyticsDashboard';
 import { OfflineLearningHub } from '../offline/OfflineLearningHub';
 import { IELTSMasteryHub } from '../ielts/IELTSMasteryHub';
 import { type ProgressAnalytics } from '@/types/progress';
@@ -30,7 +30,7 @@ interface UserData {
   subscription_status: string;
 }
 
-type TabType = 'home' | 'journey' | 'roleplay' | 'exercises' | 'razia' | 'progress' | 'analytics' | 'offline' | 'ielts' | 'profile';
+type TabType = 'home' | 'journey' | 'roleplay' | 'exercises' | 'razia' | 'progress' | 'analytics' | 'premium' | 'offline' | 'ielts' | 'profile';
 
 export function DashboardLayout() {
   const { user } = useAuth();
@@ -362,13 +362,17 @@ export function DashboardLayout() {
                     />
                   )}
                   {activeTab === 'progress' && (
-                    <ProgressDashboard
-                      userName={user?.email?.split('@')[0] || 'Student'}
-                      data={mockProgressData}
+                    <ComprehensiveProgressDashboard
+                      userId={user?.id || ''}
                     />
                   )}
                   {activeTab === 'analytics' && (
-                    <AdvancedAnalyticsDashboard />
+                    <AdvancedAnalyticsDashboard
+                      userId={user?.id || ''}
+                    />
+                  )}
+                  {activeTab === 'premium' && (
+                    <PremiumFeaturesShowcase />
                   )}
                   {activeTab === 'offline' && (
                     <OfflineLearningHub />
