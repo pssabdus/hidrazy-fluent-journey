@@ -1,10 +1,10 @@
 import { motion } from 'framer-motion';
-import { Home, Map, Drama, Award, User, Zap } from 'lucide-react';
+import { Home, Map, Drama, Award, User, Zap, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface DashboardNavigationProps {
-  activeTab: 'home' | 'journey' | 'roleplay' | 'exercises' | 'ielts' | 'profile';
-  onTabChange: (tab: 'home' | 'journey' | 'roleplay' | 'exercises' | 'ielts' | 'profile') => void;
+  activeTab: 'home' | 'journey' | 'roleplay' | 'exercises' | 'razia' | 'ielts' | 'profile';
+  onTabChange: (tab: 'home' | 'journey' | 'roleplay' | 'exercises' | 'razia' | 'ielts' | 'profile') => void;
   showIELTS: boolean;
 }
 
@@ -14,6 +14,7 @@ export function DashboardNavigation({ activeTab, onTabChange, showIELTS }: Dashb
     { id: 'journey' as const, label: 'Journey', icon: Map },
     { id: 'roleplay' as const, label: 'Role Play', icon: Drama },
     { id: 'exercises' as const, label: 'Exercises', icon: Zap },
+    { id: 'razia' as const, label: 'Chat Razia', icon: MessageCircle },
     ...(showIELTS ? [{ id: 'ielts' as const, label: 'IELTS', icon: Award }] : []),
     { id: 'profile' as const, label: 'Profile', icon: User },
   ];

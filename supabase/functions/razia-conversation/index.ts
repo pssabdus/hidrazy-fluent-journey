@@ -6,178 +6,233 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const RAZIA_PERSONALITY = `You are Razia, a warm and encouraging English teacher from Libya who specializes in teaching English to Arabic speakers. You have a friendly, patient personality and always provide constructive feedback.
+const RAZIA_PERSONALITY = `
+You are Razia, a warm and encouraging English teacher from Libya who deeply understands Arabic culture and helps Arabic speakers learn English. Your personality traits:
 
-Key traits:
-- Warm, encouraging, and supportive
-- Expert in English grammar and pronunciation
-- Understands Arabic language and culture
-- Provides gentle corrections with explanations
-- Celebrates student progress
-- Uses contextual examples
-- Adapts teaching style to student level
-- Incorporates cultural insights when relevant
+- Extremely patient and encouraging with mistakes
+- Celebrates even small progress with enthusiasm  
+- Provides cultural context bridging Arabic and English
+- Adapts your teaching style to the student's level
+- Remembers conversation history and builds on it
+- Uses encouraging Arabic phrases occasionally:
+  * "Mumtaz!" (Excellent!)
+  * "Yalla!" (Let's go!)
+  * "Mashallah!" (God has willed it - for good progress)
+  * "Inshallah" (God willing - for future goals)
+  * "Ahlan wa sahlan" (Welcome)
 
-When responding:
-1. Stay in character as Razia
-2. Be encouraging and positive
-3. Provide corrections gently with explanations
-4. Use appropriate difficulty level for the student
-5. Include cultural context when helpful
-6. End with a question or prompt to continue conversation`;
+Teaching approach:
+- Give gentle, constructive corrections with explanations
+- Provide multiple ways to express the same idea
+- Use scaffolded learning (hints before direct answers)
+- Connect new vocabulary to previously learned words
+- Offer cultural insights comparing Arabic and English contexts
+- Maintain encouraging tone even when correcting
+
+Response style guidelines:
+- Keep responses conversational and natural
+- Include corrections in a supportive way
+- Add cultural tips when relevant
+- Use appropriate language level for the student
+- Show enthusiasm for the student's efforts
+- Reference their progress and improvements
+`;
 
 interface ConversationMessage {
   id: string;
-  type: 'razia' | 'user' | 'system';
+  type: 'user' | 'razia' | 'correction' | 'cultural-tip' | 'system';
   content: string;
   timestamp: number;
 }
 
-interface LessonContext {
-  title: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  progress: number;
+interface UserProfile {
+  name: string;
+  country: string;
+  nativeLanguage: string;
+  interests: string[];
+  commonMistakes: string[];
+  progressMilestones: string[];
+}
+
+interface AIResponseOptions {
+  includeCorrections: boolean;
+  includeEncouragement: boolean;
+  includeCulturalContext: boolean;
+  adaptLanguageLevel: boolean;
+  responseStyle: 'conversational' | 'instructional' | 'assessment';
+  maxResponseLength: number;
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { userMessage, lessonType, lessonContext, conversationHistory } = await req.json();
+    const { 
+      userMessage, 
+      conversationType, 
+      userLevel, 
+      conversationHistory, 
+      userProfile, 
+      options 
+    } = await req.json();
 
-    if (!userMessage) {
-      throw new Error('User message is required');
-    }
-
-    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
-    if (!OPENAI_API_KEY) {
+    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+    if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
     }
 
-    console.log('Generating Razia response for:', userMessage.substring(0, 50) + '...');
+    // Build context from conversation history
+    const recentHistory = conversationHistory
+      .slice(-8) // Last 8 messages for context
+      .map((msg: ConversationMessage) => ({
+        role: msg.type === 'user' ? 'user' : 'assistant',
+        content: msg.content
+      }));
 
-    // Build conversation context
-    const contextualPrompt = `${RAZIA_PERSONALITY}
+    // Create conversation-specific context
+    const conversationContext = getConversationContext(conversationType, userLevel, userProfile);
+    
+    // Build the prompt with personality and context
+    const systemPrompt = `${RAZIA_PERSONALITY}
 
-Current lesson: ${lessonContext.title} (${lessonType})
-Student level: ${lessonContext.difficulty}
-Lesson progress: ${lessonContext.progress}%
+Current context:
+- Conversation type: ${conversationType}
+- Student level: ${userLevel}
+- Student name: ${userProfile.name}
+- Student background: ${userProfile.country}, native ${userProfile.nativeLanguage} speaker
+- Student interests: ${userProfile.interests.join(', ') || 'Not specified'}
+- Common mistakes to watch for: ${userProfile.commonMistakes.join(', ') || 'None noted yet'}
 
-Recent conversation:
-${conversationHistory.map((msg: ConversationMessage) => 
-  `${msg.type === 'user' ? 'Student' : 'Razia'}: ${msg.content}`
-).join('\n')}
+${conversationContext}
 
-Student just said: "${userMessage}"
+Response guidelines for this message:
+- Include gentle corrections: ${options.includeCorrections}
+- Include encouragement: ${options.includeEncouragement}  
+- Include cultural context: ${options.includeCulturalContext}
+- Adapt language level: ${options.adaptLanguageLevel}
+- Response style: ${options.responseStyle}
+- Keep response under ${options.maxResponseLength} characters
 
-Respond as Razia. Provide:
-1. A natural, encouraging response
-2. Any grammar corrections needed (be gentle)
-3. Vocabulary help if appropriate
-4. A follow-up question to continue the conversation
+Remember to be Razia - warm, encouraging, culturally aware, and genuinely excited to help with English learning!`;
 
-If there are corrections, format them as an array in your response.`;
+    console.log('Generating response for user message:', userMessage);
 
-    // Generate response with GPT
+    // Call OpenAI API
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         model: 'gpt-4.1-2025-04-14',
         messages: [
-          {
-            role: 'system',
-            content: contextualPrompt
-          },
-          {
-            role: 'user',
-            content: userMessage
-          }
+          { role: 'system', content: systemPrompt },
+          ...recentHistory,
+          { role: 'user', content: userMessage }
         ],
-        max_completion_tokens: 300,
-        tools: [
-          {
-            type: 'function',
-            function: {
-              name: 'respond_as_razia',
-              description: 'Respond as Razia with corrections if needed',
-              parameters: {
-                type: 'object',
-                properties: {
-                  message: {
-                    type: 'string',
-                    description: 'Razia\'s response message'
-                  },
-                  corrections: {
-                    type: 'array',
-                    description: 'Grammar or vocabulary corrections',
-                    items: {
-                      type: 'object',
-                      properties: {
-                        original: { type: 'string' },
-                        suggestion: { type: 'string' },
-                        explanation: { type: 'string' }
-                      }
-                    }
-                  },
-                  emotion: {
-                    type: 'string',
-                    enum: ['neutral', 'encouraging', 'thinking', 'excited', 'corrective'],
-                    description: 'Emotional tone for voice synthesis'
-                  }
-                },
-                required: ['message']
-              }
-            }
-          }
-        ],
-        tool_choice: { type: 'function', function: { name: 'respond_as_razia' } }
+        max_completion_tokens: Math.min(500, Math.floor(options.maxResponseLength / 2)),
+        temperature: 0.8
       }),
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('OpenAI API error:', errorText);
+      const errorData = await response.text();
+      console.error('OpenAI API error:', response.status, errorData);
       throw new Error(`OpenAI API error: ${response.status}`);
     }
 
     const data = await response.json();
-    
-    let raziaResponse;
-    if (data.choices[0].message.tool_calls && data.choices[0].message.tool_calls.length > 0) {
-      raziaResponse = JSON.parse(data.choices[0].message.tool_calls[0].function.arguments);
-    } else {
-      // Fallback if function calling doesn't work
-      raziaResponse = {
-        message: data.choices[0].message.content || "Hello! How can I help you practice English today?",
-        emotion: 'encouraging'
-      };
-    }
+    const raziaResponse = data.choices[0].message.content;
 
-    console.log('Generated Razia response:', raziaResponse.message ? raziaResponse.message.substring(0, 50) + '...' : 'No message');
+    console.log('Generated Razia response:', raziaResponse);
+
+    // Analyze response for corrections and cultural tips (simplified)
+    const analysis = analyzeResponse(raziaResponse, userMessage);
 
     return new Response(
-      JSON.stringify(raziaResponse),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      },
+      JSON.stringify({ 
+        response: raziaResponse,
+        analysis
+      }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
     );
+
   } catch (error) {
     console.error('Error in razia-conversation function:', error);
     return new Response(
       JSON.stringify({ 
-        message: "I'm sorry, I'm having trouble understanding right now. Could you please try again?",
-        emotion: 'neutral'
+        error: error.message,
+        response: "I apologize, I'm having some technical difficulties right now. Let's try again in a moment! 😊"
       }),
-      {
+      { 
         status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
     );
   }
 });
+
+function getConversationContext(type: string, level: string, profile: UserProfile): string {
+  const contexts = {
+    'lesson-practice': `
+This is a structured lesson practice session. Focus on:
+- Following lesson objectives and guided topics
+- Reinforcing specific vocabulary and grammar points
+- Providing structured practice opportunities
+- Giving clear explanations and examples
+`,
+    'free-chat': `
+This is an open conversation. Focus on:
+- Natural, flowing dialogue
+- Following the student's interests and topics
+- Gentle guidance toward learning opportunities
+- Building confidence through casual conversation
+`,
+    'role-play': `
+This is a role-play scenario. Focus on:
+- Staying in character while teaching
+- Creating realistic conversation situations
+- Providing practical language use examples
+- Making scenarios relevant to student's life
+`,
+    'assessment': `
+This is an assessment conversation. Focus on:
+- Evaluating language skills naturally within conversation
+- Noting strengths and areas for improvement
+- Providing constructive feedback
+- Measuring progress against learning goals
+`,
+    'cultural-bridge': `
+This is a cultural bridge conversation. Focus on:
+- Comparing Arabic and English cultural contexts
+- Explaining cultural nuances and expectations
+- Helping navigate cultural differences
+- Building cross-cultural understanding
+`
+  };
+
+  return contexts[type as keyof typeof contexts] || contexts['free-chat'];
+}
+
+function analyzeResponse(response: string, userMessage: string) {
+  // Simple analysis - in a real implementation, this could be more sophisticated
+  const hasEncouragement = /(?:great|excellent|good|wonderful|fantastic|amazing|mumtaz|mashallah)/i.test(response);
+  const hasCorrection = /(?:try saying|better to say|correct way|should be|instead of)/i.test(response);
+  const hasCulturalTip = /(?:in english|arabic|culture|custom|tradition)/i.test(response);
+  const hasArabicPhrase = /(?:mumtaz|yalla|mashallah|inshallah|ahlan)/i.test(response);
+
+  return {
+    hasEncouragement,
+    hasCorrection,
+    hasCulturalTip,
+    hasArabicPhrase,
+    responseLength: response.length,
+    tone: hasEncouragement ? 'encouraging' : 'neutral'
+  };
+}

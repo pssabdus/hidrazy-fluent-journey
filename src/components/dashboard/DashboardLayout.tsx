@@ -11,6 +11,7 @@ import { TravelEnglishDashboard } from './dashboards/TravelEnglishDashboard';
 import { RolePlayHub } from '../roleplay/RolePlayHub';
 import { RolePlayInterface } from '../roleplay/RolePlayInterface';
 import { ExerciseHub } from '../exercises/ExerciseHub';
+import { RaziaConversationInterface } from '../conversation/RaziaConversationInterface';
 import { Scenario } from '@/types/roleplay';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -23,7 +24,7 @@ interface UserData {
   subscription_status: string;
 }
 
-type TabType = 'home' | 'journey' | 'roleplay' | 'exercises' | 'ielts' | 'profile';
+type TabType = 'home' | 'journey' | 'roleplay' | 'exercises' | 'razia' | 'ielts' | 'profile';
 
 export function DashboardLayout() {
   const { user } = useAuth();
@@ -185,6 +186,13 @@ export function DashboardLayout() {
             )}
             {activeTab === 'exercises' && (
               <ExerciseHub />
+            )}
+            {activeTab === 'razia' && (
+              <RaziaConversationInterface
+                userId={user?.id || ''}
+                userName={user?.email?.split('@')[0] || 'Student'}
+                initialType="free-chat"
+              />
             )}
             {(activeTab === 'journey' || activeTab === 'profile') && (
               <div className="text-center py-12">
