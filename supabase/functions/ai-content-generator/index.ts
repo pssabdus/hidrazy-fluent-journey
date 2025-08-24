@@ -247,7 +247,64 @@ serve(async (req) => {
 
     console.log(`[AI-CONTENT-GEN] Generating ${requestData.content_type} content for level ${requestData.level}`);
 
-    // Get level requirements and user progress
+    // Get user's learning history and progress
+    const [progressionData, assessmentData, completedContent, learningAnalytics] = await Promise.all([
+      // Get user progression
+      supabaseClient
+        .from('level_progression')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle(),
+      
+      // Get recent assessments
+      supabaseClient
+        .from('level_assessments')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('completed_at', { ascending: false })
+        .limit(10),
+      
+      // Get recently completed content
+      supabaseClient
+        .from('generated_content')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('is_completed', true)
+        .order('updated_at', { ascending: false })
+        .limit(20),
+      
+      // Get learning analytics
+      supabaseClient
+        .from('learning_analytics')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('date', { ascending: false })
+        .limit(7)
+    ]);
+
+    const userProgression = progressionData.data;
+    const userAssessments = assessmentData.data || [];
+    const userCompletedContent = completedContent.data || [];
+    const userAnalytics = learningAnalytics.data || [];
+
+    console.log(`[AI-CONTENT-GEN] Found user history: ${userCompletedContent.length} completed content, ${userAssessments.length} assessments`);
+
+    // Analyze user's strengths and weaknesses
+    const weakAreas = [];
+    const strongAreas = [];
+    const completedTopics = userCompletedContent.map(c => c.topic).filter(Boolean);
+    
+    // Check assessment performance
+    for (const assessment of userAssessments) {
+      const passThreshold = LEVEL_REQUIREMENTS[assessment.level]?.assessment_criteria[assessment.assessment_type] || 70;
+      if (assessment.score < passThreshold) {
+        weakAreas.push(assessment.assessment_type);
+      } else if (assessment.score > passThreshold + 15) {
+        strongAreas.push(assessment.assessment_type);
+      }
+    }
+
+    // Get level requirements and content template
     const levelReqs = LEVEL_REQUIREMENTS[requestData.level];
     const template = CONTENT_TEMPLATES[requestData.content_type];
 
@@ -255,9 +312,28 @@ serve(async (req) => {
       throw new Error(`Unsupported content type: ${requestData.content_type}`);
     }
 
-    // Prepare OpenAI prompt
+    // Prepare adaptive OpenAI prompt with user history
+    const adaptiveContext = `
+USER LEARNING PROFILE:
+${userProgression ? `- Current Level: ${userProgression.current_level}
+- Completed Levels: ${userProgression.levels_completed?.join(', ') || 'None'}
+- Total Learning Time: ${Math.floor((userProgression.total_learning_time || 0) / 60)}h ${(userProgression.total_learning_time || 0) % 60}m
+- Study Streak: ${userProgression.streak_days || 0} days` : '- New learner, no progression data yet'}
+
+RECENT PERFORMANCE:
+${weakAreas.length > 0 ? `- Needs improvement in: ${weakAreas.join(', ')}` : '- No weak areas identified'}
+${strongAreas.length > 0 ? `- Strong areas: ${strongAreas.join(', ')}` : '- Building foundational skills'}
+
+COMPLETED TOPICS: ${completedTopics.length > 0 ? completedTopics.slice(0, 10).join(', ') : 'None yet'}
+
+RECENT LEARNING PATTERNS:
+${userAnalytics.length > 0 ? `- Average study time: ${Math.round(userAnalytics.reduce((sum, a) => sum + (a.study_duration_minutes || 0), 0) / userAnalytics.length)} min/day
+- Common mistakes: ${userAnalytics[0]?.mistake_patterns ? Object.keys(userAnalytics[0].mistake_patterns).slice(0, 3).join(', ') : 'None identified'}
+- Engagement level: ${userAnalytics[0]?.engagement_score ? (userAnalytics[0].engagement_score * 100).toFixed(0) + '%' : 'Not measured'}` : '- No recent learning data available'}`;
+
     const prompt = `${template.system_prompt}
 
+CONTENT GENERATION REQUEST:
 LEVEL: ${requestData.level}
 CONTENT TYPE: ${requestData.content_type}
 TOPIC: ${requestData.topic || 'General'}
@@ -270,6 +346,16 @@ LEVEL REQUIREMENTS:
 - Key skills: ${levelReqs.skills.join(', ')}
 
 LEARNING OBJECTIVES: ${requestData.learning_objectives?.join(', ') || 'Not specified'}
+
+${adaptiveContext}
+
+PERSONALIZATION INSTRUCTIONS:
+1. If weak areas are identified, focus extra attention on those skills
+2. Avoid repeating recently completed topics unless for reinforcement
+3. Adjust difficulty based on user's current level vs target level
+4. If user has strong areas, use those as confidence builders
+5. Consider the user's learning patterns and engagement preferences
+6. Build upon previously completed content when relevant
 
 CONTENT STRUCTURE:
 ${Object.entries(template.structure).map(([key, desc]) => `${key}: ${desc}`).join('\n')}
