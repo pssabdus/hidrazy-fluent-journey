@@ -22,7 +22,9 @@ import {
 import { RaziaConversationInterface } from '@/components/conversation/RaziaConversationInterface';
 import ComprehensiveProgressDashboard from '@/components/progress/ComprehensiveProgressDashboard';
 import { AILessonInterface } from '@/components/lesson/AILessonInterface';
+import { StealthAssessmentInterface } from '@/components/assessment/StealthAssessmentInterface';
 import { AITeachingService, type LessonContext } from '@/services/AITeachingService';
+import { StealthAssessmentService, type AssessmentResult } from '@/services/IntelligentProgressService';
 
 interface UserData {
   learning_goal: string;
@@ -32,7 +34,7 @@ interface UserData {
   subscription_status: string;
 }
 
-type ViewType = 'dashboard' | 'chat' | 'progress' | 'settings' | 'ai-lesson';
+type ViewType = 'dashboard' | 'chat' | 'progress' | 'settings' | 'ai-lesson' | 'assessment';
 
 interface DailyActivity {
   id: string;
@@ -54,6 +56,41 @@ export function SimplifiedDashboard() {
   const [currentProgress, setCurrentProgress] = useState(65);
   const [advancedMode, setAdvancedMode] = useState(false);
   const [dailyTheme, setDailyTheme] = useState("Past Tense Storytelling");
+  const [needsAssessment, setNeedsAssessment] = useState(false);
+
+  // Check if user needs assessment on component mount
+  useEffect(() => {
+    if (user) {
+      checkAssessmentStatus();
+      fetchUserData();
+    }
+  }, [user]);
+
+  const checkAssessmentStatus = async () => {
+    try {
+      // Check if user has completed assessment
+      const { data: assessmentData, error } = await supabase
+        .from('assessments')
+        .select('status, final_level')
+        .eq('user_id', user?.id)
+        .eq('status', 'completed')
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error checking assessment status:', error);
+        return;
+      }
+
+      // If no completed assessment found, user needs assessment
+      if (!assessmentData || assessmentData.length === 0) {
+        setNeedsAssessment(true);
+        setCurrentView('assessment');
+      }
+    } catch (error) {
+      console.error('Error checking assessment status:', error);
+    }
+  };
 
   // Generate daily theme
   useEffect(() => {
@@ -177,6 +214,16 @@ export function SimplifiedDashboard() {
     );
   };
 
+  const handleAssessmentComplete = (result: AssessmentResult) => {
+    setNeedsAssessment(false);
+    setCurrentView('dashboard');
+    // Update user data with assessment results
+    setUserData(prev => prev ? {
+      ...prev,
+      current_level: result.final_level
+    } : null);
+  };
+
   const handleActivityClick = (activity: DailyActivity) => {
     if (!activity.isUnlocked) return;
     
@@ -189,6 +236,19 @@ export function SimplifiedDashboard() {
       handleActivityComplete(activity.id);
     }
   };
+
+  // Show assessment if needed
+  if (needsAssessment || currentView === 'assessment') {
+    return (
+      <StealthAssessmentInterface
+        onComplete={handleAssessmentComplete}
+        onBack={() => {
+          setCurrentView('dashboard');
+          setNeedsAssessment(false);
+        }}
+      />
+    );
+  }
 
   if (loading) {
     return (
