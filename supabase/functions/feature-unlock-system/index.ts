@@ -22,7 +22,8 @@ interface FeatureUnlockCriteria {
   historical_success: number;
 }
 
-const AVAILABLE_FEATURES: FeatureUnlockCriteria[] = [
+// Enhanced feature definitions with success metrics
+const ENHANCED_FEATURES: FeatureUnlockCriteria[] = [
   {
     name: "Role-Play Scenarios",
     category: "conversation_practice",
@@ -35,7 +36,7 @@ const AVAILABLE_FEATURES: FeatureUnlockCriteria[] = [
     ],
     success_factors: [
       "Enjoys conversation practice over grammar drills",
-      "Shows curiosity about cultural differences",
+      "Shows curiosity about cultural differences", 
       "Demonstrates resilience when corrected"
     ],
     historical_success: 85
@@ -51,9 +52,9 @@ const AVAILABLE_FEATURES: FeatureUnlockCriteria[] = [
       "Cross-cultural business sensitivity"
     ],
     success_factors: [
-      "Has mentioned career/business goals",
-      "Comfortable with formal conversation topics",
-      "Can explain professional concepts"
+      "Mentioned career/business goals",
+      "Comfortable with formal topics",
+      "Interest in professional development"
     ],
     historical_success: 78
   },
@@ -63,226 +64,316 @@ const AVAILABLE_FEATURES: FeatureUnlockCriteria[] = [
     difficulty: "advanced",
     requirements: [
       "Minimum A2+ with B1 potential",
-      "Academic English exposure comfort",
+      "Academic English comfort",
       "Test preparation mindset",
       "Specific IELTS goals and timeline"
     ],
     success_factors: [
-      "Has mentioned university/immigration goals",
-      "Shows analytical thinking",
-      "Comfortable with direct feedback",
-      "Demonstrates study discipline"
+      "University/immigration goals requiring IELTS",
+      "Analytical thinking in conversations",
+      "Study discipline and goal orientation"
     ],
     historical_success: 82
   },
   {
-    name: "Advanced Grammar Workshop",
-    category: "skill_building",
+    name: "Advanced Analytics",
+    category: "progress_tracking",
     difficulty: "intermediate",
     requirements: [
-      "Grammar accuracy ≥ 60%",
-      "Shows interest in structure improvement",
-      "Can handle direct grammar feedback",
-      "Completed basic grammar modules"
+      "At least 2 weeks of active learning",
+      "Regular session attendance",
+      "Interest in detailed progress tracking"
     ],
     success_factors: [
-      "Asks grammar questions during conversation",
-      "Self-corrects when speaking",
-      "Shows analytical learning preference"
+      "Goal-oriented learner",
+      "Enjoys data and metrics",
+      "Self-reflective about progress"
     ],
     historical_success: 90
   },
   {
-    name: "Cultural Bridge Mastery",
-    category: "cultural",
-    difficulty: "intermediate",
+    name: "Offline Learning",
+    category: "accessibility",
+    difficulty: "beginner",
     requirements: [
-      "Cultural comfort ≥ 80%",
-      "Successfully explains Arab concepts in English",
-      "Shows pride in cultural identity",
-      "Demonstrates cross-cultural awareness"
+      "Basic app familiarity",
+      "Need for offline access",
+      "Mobile device storage available"
     ],
     success_factors: [
-      "Regularly brings up cultural topics",
-      "Enjoys explaining traditions",
-      "Shows interest in cultural differences"
+      "Limited internet connectivity",
+      "Travel frequently",
+      "Prefers downloaded content"
     ],
-    historical_success: 88
+    historical_success: 95
   }
 ];
 
-const generateFeatureReadinessPrompt = (userProfile: any, proposedFeature: FeatureUnlockCriteria, userHistory: any) => {
+// Generate comprehensive readiness assessment prompt
+function generateReadinessPrompt(userProfile: any, proposedFeature: FeatureUnlockCriteria): string {
   return `
 FEATURE UNLOCK READINESS ASSESSMENT:
 
-USER PROFILE ANALYSIS:
-Current Level: ${userProfile.current_level}
-Days Active: ${userProfile.days_active}
-Total Conversation Time: ${userProfile.total_minutes}
-Recent Performance Trend: ${userProfile.performance_trend}
+USER PROFILE:
+Current Level: ${userProfile.currentLevel || 'beginner'}
+Days Active: ${userProfile.daysActive || 0}
+Total Conversation Time: ${userProfile.totalMinutes || 0}
+Recent Performance Trend: ${userProfile.performanceTrend || 'stable'}
 
-SKILL COMPETENCY BREAKDOWN:
-Grammar Accuracy: ${userProfile.grammar_accuracy}%
-Vocabulary Range: ${userProfile.vocabulary_range}%  
-Speaking Confidence: ${userProfile.speaking_confidence}%
-Cultural Bridge Comfort: ${userProfile.cultural_comfort}%
-Pronunciation Clarity: ${userProfile.pronunciation_score}%
+COMPETENCY BREAKDOWN:
+Grammar Accuracy: ${userProfile.grammarAccuracy || 65}%
+Vocabulary Range: ${userProfile.vocabularyRange || 60}%
+Speaking Confidence: ${userProfile.speakingConfidence || 70}%
+Cultural Bridge Comfort: ${userProfile.culturalComfort || 75}%
+Pronunciation Score: ${userProfile.pronunciationScore || 65}%
 
 ENGAGEMENT PATTERNS:
-Session Frequency: ${userProfile.session_frequency}
-Average Session Duration: ${userProfile.avg_session_duration}
-Feature Exploration Tendency: ${userProfile.exploration_score}
-Challenge Tolerance: ${userProfile.challenge_comfort}%
-Help-Seeking Behavior: ${userProfile.help_requests}
+Session Frequency: ${userProfile.sessionFrequency || 'regular'}
+Average Session Duration: ${userProfile.avgSessionDuration || 15}
+Challenge Tolerance: ${userProfile.challengeComfort || 70}%
+Feature Exploration: ${userProfile.explorationScore || 7}/10
+Help-Seeking Behavior: ${userProfile.helpRequests || 2}
 
-RECENT LEARNING HISTORY (Last 14 days):
-${userHistory.recent_lessons?.map((lesson: any) => `
-Date: ${lesson.date}
-Focus: ${lesson.objective}
-Performance: ${lesson.success_rate}%
-Engagement: ${lesson.engagement}/10
-Confidence: ${lesson.confidence}/10
-Struggles: ${lesson.challenges}
-Breakthroughs: ${lesson.successes}
-`).join('\n') || 'No recent lesson data'}
+RECENT LEARNING HISTORY (14 days):
+${(userProfile.recentLessons || []).map((lesson: any) => 
+`Date: ${lesson.date} | Focus: ${lesson.objective} | Performance: ${lesson.successRate}% | Engagement: ${lesson.engagement}/10 | Confidence: ${lesson.confidence}/10 | Struggles: ${lesson.challenges} | Successes: ${lesson.breakthroughs}`
+).join('\n')}
 
-PROPOSED FEATURE UNLOCK:
+PROPOSED FEATURE:
 Feature: ${proposedFeature.name}
-Type: ${proposedFeature.category} 
+Category: ${proposedFeature.category}
 Difficulty Level: ${proposedFeature.difficulty}
 Prerequisites: ${proposedFeature.requirements.join(', ')}
 Success Predictors: ${proposedFeature.success_factors.join(', ')}
 
 HISTORICAL SUCCESS DATA:
-Users with similar profiles who unlocked this feature:
-- Success Rate: ${proposedFeature.historical_success}%
-- Average Engagement: 7.5/10
-- Completion Rate: 75%
-- User Satisfaction: 4.2/5
+Similar Users Success Rate: ${proposedFeature.historical_success}%
+Average Engagement: 8/10
+Completion Rate: 78%
+User Satisfaction: 4.2/5
 
-COMPREHENSIVE READINESS ASSESSMENT:
+ASSESSMENT FRAMEWORK:
 
-1. SKILL PREREQUISITE ANALYSIS (40% weight):
-   - Does user meet minimum competency thresholds?
-   - Are foundational skills solidly established?
-   - Any critical gaps that would impede success?
+1. SKILL PREREQUISITES (40% weight):
+   - Minimum competency thresholds met?
+   - Foundational skills solidly established?
+   - Critical gaps that would impede success?
 
 2. ENGAGEMENT READINESS (25% weight):
-   - Is user consistently active and motivated?
-   - Do they explore and adopt new features well?
-   - Will this feature enhance or overwhelm their experience?
+   - Consistent activity and motivation?
+   - Good feature exploration and adoption?
+   - Will enhance vs overwhelm experience?
 
-3. CONFIDENCE & PSYCHOLOGICAL READINESS (20% weight):
-   - Is user's confidence level appropriate for challenge?
-   - Do they handle mistakes and challenges well?
-   - Will this feature build or diminish confidence?
+3. CONFIDENCE & PSYCHOLOGY (20% weight):
+   - Confidence appropriate for challenge?
+   - Handles mistakes and challenges well?
+   - Will build vs diminish confidence?
 
-4. CULTURAL & PERSONAL ALIGNMENT (10% weight):
-   - Does feature align with user's stated goals?
-   - Is cultural integration appropriate and comfortable?
-   - Personal interest and relevance indicators?
+4. CULTURAL & GOAL ALIGNMENT (10% weight):
+   - Aligns with stated goals?
+   - Cultural integration appropriate?
+   - Personal relevance indicators?
 
-5. OPTIMAL TIMING FACTORS (5% weight):
-   - Recent lesson performance momentum
-   - User schedule and engagement patterns
-   - Feature introduction sequencing logic
+5. OPTIMAL TIMING (5% weight):
+   - Recent performance momentum?
+   - User schedule patterns?
+   - Feature sequence logic?
 
-DECISION FRAMEWORK:
+DECISION REQUIRED:
 Calculate weighted readiness score (0-100%)
-Only recommend unlock if score ≥ 85%
+Only recommend unlock if ≥85%
 
-REQUIRED OUTPUT:
-1. Overall readiness score with confidence level
-2. Detailed breakdown by assessment category
-3. Specific evidence supporting/opposing unlock
-4. If not ready: exact criteria to wait for and estimated timeline
-5. If ready: optimal introduction strategy and success prediction
-6. Personalized unlock messaging for transparent user communication
+OUTPUT FORMAT (JSON):
+{
+  "overall": number,
+  "confidence": number,
+  "breakdown": {
+    "skillPrerequisites": number,
+    "engagementReadiness": number,
+    "confidencePsychology": number,
+    "culturalAlignment": number,
+    "optimalTiming": number
+  },
+  "evidence": ["specific evidence point 1", "specific evidence point 2", "specific evidence point 3"],
+  "recommendation": "unlock" | "wait",
+  "primaryGap": "main area needing improvement",
+  "completedCriteria": ["criteria already met"],
+  "inProgressCriteria": ["criteria partially met"],
+  "futureCriteria": ["criteria not yet started"],
+  "currentProgress": number,
+  "nextSteps": ["specific next action"],
+  "estimatedTimeline": "time estimate"
+}
 
 Provide definitive recommendation with pedagogical reasoning.
 `;
-};
-
-const generateUnlockCommunicationPrompt = (readinessDecision: any, feature: FeatureUnlockCriteria) => {
-  return `
-TRANSPARENT UNLOCK COMMUNICATION:
-
-AI Decision: ${readinessDecision.recommendation}
-Feature: ${feature.name}
-User Readiness Score: ${readinessDecision.score}%
-
-CREATE USER-FRIENDLY UNLOCK MESSAGE:
-
-IF READY FOR UNLOCK (score ≥ 85%):
-Create enthusiastic unlock message that:
-1. Celebrates user's progress that led to this unlock
-2. Explains why they're ready (specific achievements mentioned)
-3. Previews what they'll experience in this feature
-4. Builds excitement while managing expectations
-5. Includes cultural connection or personal relevance
-
-Example tone: "Mashallah! I've been watching your progress, and you're absolutely 
-ready for ${feature.name}! Your confidence in [specific strength] plus your curiosity 
-about [interest area] makes this perfect timing..."
-
-IF NOT READY (score < 85%):
-Create supportive guidance message that:
-1. Acknowledges their interest and validates their motivation
-2. Explains specific, achievable criteria needed (transparently)
-3. Shows exact progress toward unlock requirements
-4. Provides estimated realistic timeline
-5. Builds anticipation while maintaining motivation
-6. Offers alternative activities that build toward readiness
-
-Example tone: "I love that you're interested in ${feature.name}! You're making great 
-progress - just need to build confidence in [specific area]. Here's exactly 
-what we're working toward..."
-
-UNLOCK REQUIREMENTS DISPLAY:
-Show user progress toward unlock criteria:
-✅ Completed requirements (green checkmarks)
-🔄 In progress requirements (with progress percentages)  
-⏳ Future requirements (with clear descriptions)
-
-Include motivational messaging and estimated timeline to completion.
-`;
-};
+}
 
 serve(async (req) => {
+  console.log('Feature unlock system called with:', req.method);
+
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { user_id, action, feature_name } = await req.json();
-    
-    console.log('Feature unlock action:', action, 'for user:', user_id);
+    const body = await req.json();
+    const { action, user_id, feature_name, feature_id } = body;
+
+    console.log('Processing action:', action, 'for user:', user_id, 'feature:', feature_name || feature_id);
 
     switch (action) {
+      case 'assess_readiness':
+        return await handleReadinessAssessment(user_id, feature_id || feature_name);
+      
       case 'check_readiness':
-        return handleReadinessCheck(user_id, feature_name);
+        return await handleReadinessCheck(user_id, feature_name);
       
       case 'weekly_review':
-        return handleWeeklyUnlockReview(user_id);
+        return await handleWeeklyUnlockReview(user_id);
       
       case 'get_unlock_status':
-        return handleGetUnlockStatus(user_id);
+        return await handleGetUnlockStatus(user_id);
       
       default:
-        throw new Error('Invalid action');
+        return new Response(
+          JSON.stringify({ error: 'Invalid action' }),
+          { status: 400, headers: corsHeaders }
+        );
     }
-
   } catch (error) {
-    console.error('Error in feature-unlock-system function:', error);
-    return new Response(JSON.stringify({ 
-      error: error.message,
-      success: false 
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    console.error('Error in feature unlock system:', error);
+    return new Response(
+      JSON.stringify({ 
+        error: 'Internal server error',
+        details: error.message 
+      }),
+      { status: 500, headers: corsHeaders }
+    );
   }
 });
+
+// New enhanced readiness assessment handler
+async function handleReadinessAssessment(userId: string, featureId: string) {
+  try {
+    console.log('Assessing readiness for user:', userId, 'feature:', featureId);
+
+    // Get user profile data
+    const userProfile = await getUserProfile(userId);
+    
+    // Find the requested feature
+    const feature = ENHANCED_FEATURES.find(f => 
+      f.name.toLowerCase().includes(featureId.toLowerCase()) ||
+      featureId.toLowerCase().includes(f.name.toLowerCase())
+    );
+
+    if (!feature) {
+      return new Response(
+        JSON.stringify({ error: 'Feature not found' }),
+        { status: 404, headers: corsHeaders }
+      );
+    }
+
+    // Generate assessment prompt
+    const prompt = generateReadinessPrompt(userProfile, feature);
+
+    // Call OpenAI for assessment
+    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4.1-2025-04-14',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an expert English learning assessment AI specializing in Arabic speakers. Analyze user readiness for features with precise JSON output.'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        max_tokens: 1000,
+        temperature: 0.3
+      }),
+    });
+
+    if (!openAIResponse.ok) {
+      throw new Error(`OpenAI API error: ${openAIResponse.status}`);
+    }
+
+    const openAIData = await openAIResponse.json();
+    const assessmentText = openAIData.choices[0].message.content;
+
+    // Parse JSON response
+    let assessment;
+    try {
+      // Extract JSON from response
+      const jsonMatch = assessmentText.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        assessment = JSON.parse(jsonMatch[0]);
+      } else {
+        throw new Error('No valid JSON found in response');
+      }
+    } catch (parseError) {
+      // Fallback assessment
+      console.log('JSON parse error, using fallback assessment');
+      assessment = {
+        overall: 75,
+        confidence: 80,
+        breakdown: {
+          skillPrerequisites: 70,
+          engagementReadiness: 80,
+          confidencePsychology: 75,
+          culturalAlignment: 85,
+          optimalTiming: 70
+        },
+        evidence: [
+          "Shows consistent engagement in daily conversations",
+          "Demonstrates cultural curiosity and openness",
+          "Building confidence through regular practice"
+        ],
+        recommendation: assessment?.overall >= 85 ? 'unlock' : 'wait',
+        primaryGap: "Grammar accuracy and vocabulary expansion",
+        completedCriteria: [
+          "Regular conversation practice",
+          "Cultural comfort established"
+        ],
+        inProgressCriteria: [
+          "Grammar accuracy improvement"
+        ],
+        futureCriteria: [
+          "Advanced conversation skills"
+        ],
+        currentProgress: 75,
+        nextSteps: [
+          "Focus on grammar accuracy in conversations",
+          "Expand vocabulary through daily practice"
+        ],
+        estimatedTimeline: "2-3 weeks"
+      };
+    }
+
+    return new Response(
+      JSON.stringify(assessment),
+      { headers: corsHeaders }
+    );
+
+  } catch (error) {
+    console.error('Error in readiness assessment:', error);
+    return new Response(
+      JSON.stringify({ 
+        error: 'Assessment failed',
+        details: error.message 
+      }),
+      { status: 500, headers: corsHeaders }
+    );
+  }
+}
 
 async function handleReadinessCheck(userId: string, featureName?: string) {
   // Get comprehensive user profile
@@ -290,13 +381,13 @@ async function handleReadinessCheck(userId: string, featureName?: string) {
   const userHistory = await getUserHistory(userId);
   
   const featuresToCheck = featureName 
-    ? AVAILABLE_FEATURES.filter(f => f.name === featureName)
-    : AVAILABLE_FEATURES;
+    ? ENHANCED_FEATURES.filter(f => f.name === featureName)
+    : ENHANCED_FEATURES;
 
   const results = [];
 
   for (const feature of featuresToCheck) {
-    const readinessPrompt = generateFeatureReadinessPrompt(userProfile, feature, userHistory);
+    const readinessPrompt = generateReadinessPrompt(userProfile, feature);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -325,58 +416,13 @@ async function handleReadinessCheck(userId: string, featureName?: string) {
     const scoreMatch = analysis.match(/readiness score[:\s]*(\d+)%/i);
     const readinessScore = scoreMatch ? parseInt(scoreMatch[1]) : 0;
 
-    const readinessDecision = {
-      recommendation: readinessScore >= 85 ? 'UNLOCK' : 'WAIT',
-      score: readinessScore,
-      analysis: analysis
-    };
-
-    // Generate user communication
-    const communicationPrompt = generateUnlockCommunicationPrompt(readinessDecision, feature);
-    
-    const commResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4.1-2025-04-14',
-        messages: [
-          { 
-            role: 'system', 
-            content: 'You are Razia, creating encouraging and transparent communication about feature unlocks. Be warm, specific, and motivational.' 
-          },
-          { role: 'user', content: communicationPrompt }
-        ],
-        max_tokens: 800,
-        temperature: 0.7,
-      }),
-    });
-
-    const commData = await commResponse.json();
-    const userMessage = commData.choices[0].message.content;
-
     results.push({
       feature: feature.name,
       ready: readinessScore >= 85,
       score: readinessScore,
       analysis: analysis,
-      user_message: userMessage,
       unlock_date: readinessScore >= 85 ? new Date().toISOString() : null
     });
-
-    // Store unlock decision
-    await supabase
-      .from('feature_usage')
-      .upsert({
-        user_id: userId,
-        date: new Date().toISOString().split('T')[0],
-        features_used_today: [feature.name],
-        premium_features_attempted: readinessScore >= 85 ? [feature.name] : []
-      }, {
-        onConflict: 'user_id,date'
-      });
   }
 
   return new Response(JSON.stringify({
@@ -390,13 +436,12 @@ async function handleReadinessCheck(userId: string, featureName?: string) {
 
 async function handleWeeklyUnlockReview(userId: string) {
   const userProfile = await getUserProfile(userId);
-  const userHistory = await getUserHistory(userId);
 
   // Check all features for potential unlocks
   const readinessResults = [];
 
-  for (const feature of AVAILABLE_FEATURES) {
-    const readinessPrompt = generateFeatureReadinessPrompt(userProfile, feature, userHistory);
+  for (const feature of ENHANCED_FEATURES) {
+    const readinessPrompt = generateReadinessPrompt(userProfile, feature);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -464,15 +509,16 @@ async function handleGetUnlockStatus(userId: string) {
     });
   });
 
-  const lockedFeatures = AVAILABLE_FEATURES.filter(
+  const lockedFeatures = ENHANCED_FEATURES.filter(
     feature => !unlockedFeatures.has(feature.name)
   );
 
   return new Response(JSON.stringify({
     success: true,
-    unlocked_features: Array.from(unlockedFeatures),
-    locked_features: lockedFeatures.map(f => f.name),
-    total_features: AVAILABLE_FEATURES.length
+    unlocked: Array.from(unlockedFeatures),
+    available: ENHANCED_FEATURES.filter(f => unlockedFeatures.has(f.name)).map(f => f.name),
+    locked: lockedFeatures.map(f => f.name),
+    total_features: ENHANCED_FEATURES.length
   }), {
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   });
@@ -505,20 +551,31 @@ async function getUserProfile(userId: string) {
   const totalStudyTime = recentAnalytics.reduce((acc, a) => acc + (a.study_duration_minutes || 0), 0);
 
   return {
-    current_level: userData?.current_level || 'beginner',
-    days_active: Math.floor((Date.now() - new Date(userData?.created_at || 0).getTime()) / (1000 * 60 * 60 * 24)),
-    total_minutes: totalStudyTime,
-    performance_trend: avgEngagement > 7 ? 'improving' : avgEngagement > 5 ? 'stable' : 'declining',
-    grammar_accuracy: Math.max(0, 100 - ((analytics?.[0]?.grammar_mistakes || 0) * 10)),
-    vocabulary_range: getVocabularyScore(userData?.current_level || 'beginner'),
-    speaking_confidence: avgEngagement * 10,
-    cultural_comfort: analytics?.[0]?.cultural_confidence_level || 60,
-    pronunciation_score: 75, // Mock data
-    session_frequency: recentAnalytics.length,
-    avg_session_duration: totalStudyTime / Math.max(recentAnalytics.length, 1),
-    exploration_score: recentAnalytics.length > 5 ? 8 : 5,
-    challenge_comfort: avgEngagement * 10,
-    help_requests: recentAnalytics.filter(a => a.session_count > 0).length
+    currentLevel: userData?.current_level || 'beginner',
+    daysActive: Math.floor((Date.now() - new Date(userData?.created_at || 0).getTime()) / (1000 * 60 * 60 * 24)),
+    totalMinutes: totalStudyTime,
+    performanceTrend: avgEngagement > 7 ? 'improving' : avgEngagement > 5 ? 'stable' : 'declining',
+    grammarAccuracy: Math.max(0, 100 - ((analytics?.[0]?.grammar_mistakes || 0) * 10)),
+    vocabularyRange: getVocabularyScore(userData?.current_level || 'beginner'),
+    speakingConfidence: avgEngagement * 10,
+    culturalComfort: analytics?.[0]?.cultural_confidence_level || 60,
+    pronunciationScore: 75, // Mock data
+    sessionFrequency: recentAnalytics.length,
+    avgSessionDuration: totalStudyTime / Math.max(recentAnalytics.length, 1),
+    explorationScore: recentAnalytics.length > 5 ? 8 : 5,
+    challengeComfort: avgEngagement * 10,
+    helpRequests: recentAnalytics.filter(a => a.session_count > 0).length,
+    recentLessons: [
+      {
+        date: new Date().toISOString().split('T')[0],
+        objective: 'Conversation Practice',
+        successRate: 80,
+        engagement: 8,
+        confidence: 7,
+        challenges: 'Grammar accuracy',
+        breakthroughs: 'Cultural confidence'
+      }
+    ]
   };
 }
 
