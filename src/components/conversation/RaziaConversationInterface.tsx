@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Mic, MicOff, Send, Volume2, VolumeX, Phone } from 'lucide-react';
 import { useConversation } from '@/contexts/ConversationContext';
-import VoiceInterface from './VoiceInterface';
+import CostOptimizedVoiceInterface from './CostOptimizedVoiceInterface';
 import { RaziaWelcomeMessage } from './RaziaWelcomeMessage';
 import { LessonNotebook } from '@/components/lesson/LessonNotebook';
 import { NotificationBulb } from '@/components/lesson/NotificationBulb';
@@ -23,6 +23,10 @@ export function RaziaConversationInterface({
   const [textInput, setTextInput] = useState('');
   const [activeTab, setActiveTab] = useState('text');
   const [hasNewNotes, setHasNewNotes] = useState(false);
+  const [userPreferences, setUserPreferences] = useState({
+    autoTTS: false,
+    smartMode: true
+  });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const {
@@ -127,6 +131,7 @@ export function RaziaConversationInterface({
             <TabsTrigger value="voice" className="flex items-center gap-2">
               <Phone className="h-4 w-4" />
               🎤 Voice Chat
+              <span className="text-xs bg-purple-100 text-purple-700 px-1 rounded">Premium</span>
             </TabsTrigger>
             <TabsTrigger value="notes" className="flex items-center gap-2 relative">
               📓 My Notes

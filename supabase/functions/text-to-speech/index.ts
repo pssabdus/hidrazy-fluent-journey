@@ -15,10 +15,52 @@ serve(async (req) => {
   try {
     console.log('[TTS] Processing text-to-speech request...');
     
-    const { text, voice, model } = await req.json()
+    const { text, voice, model, messageType, userPreferences } = await req.json()
 
     if (!text) {
       throw new Error('Text is required')
+    }
+
+    // Smart TTS decision logic - Only use TTS when it adds real value
+    const shouldUseTTS = (messageType: string, content: string, prefs?: any) => {
+      // Always TTS for these high-value cases
+      const alwaysTTS = [
+        'new_vocabulary_word', 'pronunciation_correction', 'cultural_phrase',
+        'grammar_example', 'ielts_speaking_practice'
+      ];
+      
+      // Never TTS for these (saves money)
+      const neverTTS = [
+        'simple_acknowledgment', 'repeat_response', 'system_message', 'error_message'
+      ];
+      
+      if (alwaysTTS.includes(messageType)) {
+        console.log('[COST-OPTIMIZATION] Using TTS for high-value case:', messageType);
+        return true;
+      }
+      
+      if (neverTTS.includes(messageType)) {
+        console.log('[COST-OPTIMIZATION] Skipping TTS for low-value case:', messageType);
+        return false;
+      }
+      
+      // For main responses: only if user explicitly requests audio
+      const shouldUse = prefs?.autoTTS === true || prefs?.onDemandTTS === true;
+      console.log('[COST-OPTIMIZATION] TTS decision for main response:', shouldUse);
+      return shouldUse;
+    };
+
+    if (!shouldUseTTS(messageType || 'main_response', text, userPreferences)) {
+      console.log('[COST-OPTIMIZATION] TTS skipped for cost optimization');
+      return new Response(
+        JSON.stringify({ 
+          audioContent: null,
+          audioUrl: null,
+          skipped: true,
+          reason: 'Cost optimization - use 🔊 button for on-demand audio'
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
