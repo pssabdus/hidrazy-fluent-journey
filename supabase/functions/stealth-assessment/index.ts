@@ -13,90 +13,114 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Complete 12-question stealth assessment flow
 const stealthAssessmentFlow = {
-  razia_greeting: `
-  "Marhaba! I'm Razia, and I'm absolutely thrilled to meet you! 😊
-  
-  Think of me as your English conversation partner and cultural bridge friend. 
-  Before we start our learning adventure together, I'd love to just chat and 
-  get to know you better - no pressure, no tests, just a normal conversation 
-  between friends!
-  
-  I'm curious about your story and how I can help you achieve your English goals. 
-  Ready to chat?"
-  `,
+  razia_greeting: `Marhaba! I'm Razia, and I'm absolutely thrilled to meet you! 😊
+
+Think of me as your English conversation partner and cultural bridge friend. Before we start our learning adventure together, I'd love to just chat and get to know you better - no pressure, no tests, just a normal conversation between friends!
+
+I'm curious about your story and how I can help you achieve your English goals. Ready to chat?`,
   
   assessment_questions: [
+    // A1-A2 Level (Comfort Zone)
     {
       id: 1,
       question: "So, tell me about yourself! What's your name and where are you from?",
       level: "A1-A2",
       hidden_assessment: "Basic vocabulary, present tense, pronunciation, confidence",
-      follow_up_prompts: ["That's wonderful! What do you love most about [their location]?"],
-      cultural_bridge: true
+      follow_up: "That's wonderful! What do you love most about your region?",
+      cultural_bridge: "I'd love to learn more about your area!"
     },
     {
       id: 2,
       question: "What do you enjoy doing in your free time? Any hobbies or interests?",
       level: "A1-A2",
       hidden_assessment: "Hobby vocabulary, present simple usage, sentence complexity",
-      cultural_bridge: "I'd love to hear about any traditional activities too!"
+      follow_up: "How did you get interested in that?",
+      cultural_bridge: "Are there any traditional activities you enjoy too?"
     },
     {
       id: 3,
       question: "Can you describe a typical day for you? What time do you usually wake up?",
       level: "A2",
       hidden_assessment: "Daily routine vocabulary, time expressions, sequential language",
-      follow_up_prompts: ["How does your routine change during Ramadan?"]
+      follow_up: "How does your routine change during different seasons?",
+      cultural_bridge: "How does your routine change during Ramadan?"
     },
+    // A2-B1 Level (Gentle Challenge)
     {
       id: 4,
       question: "Tell me about a happy memory from this past year. What made it special?",
       level: "A2-B1",
       hidden_assessment: "Past tense accuracy, narrative ability, emotional vocabulary",
-      cultural_connection: "Was this related to any cultural celebrations or family traditions?"
+      follow_up: "What made that moment so meaningful to you?",
+      cultural_bridge: "Was this related to any family traditions or celebrations?"
     },
     {
       id: 5,
       question: "What's something about Arab culture that you think English speakers should understand better?",
       level: "B1",
-      hidden_assessment: "Cultural vocabulary, explanation skills, complex sentence structures",
-      bridge_opportunity: "This is exactly what I love helping with - cultural bridges!"
+      hidden_assessment: "Cultural vocabulary, explanation skills, complex structures",
+      follow_up: "How would you help someone understand that concept?",
+      cultural_bridge: "This is exactly what I love helping with - cultural bridges!"
     },
     {
       id: 6,
       question: "If you could visit any English-speaking country, where would you go and why?",
       level: "B1",
-      hidden_assessment: "Conditional structures, reasoning ability, future planning language",
-      engagement: "I can help you prepare for real conversations there!"
+      hidden_assessment: "Conditional structures, reasoning ability, future planning",
+      follow_up: "What would you want to experience there?",
+      cultural_bridge: "How do you think it would be different from home?"
     },
+    // B1-B2 Level (Comfortable Stretch)
     {
       id: 7,
       question: "What do you think about social media's impact on how people communicate today?",
       level: "B1-B2",
       hidden_assessment: "Opinion expression, abstract thinking, complex vocabulary",
-      cultural_angle: "Are there differences in how it's used in Arab countries vs elsewhere?"
+      follow_up: "Have you noticed any changes in your own communication?",
+      cultural_bridge: "Are there differences in how it's used in different cultures?"
     },
     {
       id: 8,
       question: "Describe a challenge in your community and how you think it could be addressed.",
       level: "B2",
       hidden_assessment: "Problem-solution language, advanced vocabulary, analytical thinking",
-      follow_up: "Have you seen any successful examples of addressing similar issues?"
+      follow_up: "What role could individuals play in solving this?",
+      cultural_bridge: "Have you seen successful solutions in other places?"
     },
     {
       id: 9,
       question: "How has learning or using English changed your perspective on anything?",
       level: "B2",
       hidden_assessment: "Metacognitive awareness, present perfect, abstract reflection",
-      personal_connection: "I find these stories so inspiring!"
+      follow_up: "What has surprised you most about this experience?",
+      cultural_bridge: "How do you balance maintaining your identity while learning English?"
     },
+    // B2+ Level (Advanced Assessment)
     {
       id: 10,
       question: "Can you explain something from your field of work or study to someone unfamiliar with it?",
       level: "B2+",
       hidden_assessment: "Technical vocabulary, explanation skills, register awareness",
-      challenge_level: "Pretend I know nothing about your field!"
+      follow_up: "What's the most challenging part about explaining your field?",
+      cultural_bridge: "How does your field differ across different countries?"
+    },
+    {
+      id: 11,
+      question: "What role do you think technology should play in preserving cultural traditions?",
+      level: "B2+",
+      hidden_assessment: "Advanced structures, hypothetical thinking, cultural intelligence",
+      follow_up: "Can you think of any examples where this has worked well?",
+      cultural_bridge: "How has technology affected Arab cultural traditions?"
+    },
+    {
+      id: 12,
+      question: "If you were building bridges between Arabic and English-speaking cultures, what would be most important to focus on?",
+      level: "B2+",
+      hidden_assessment: "Sophisticated vocabulary, cultural competence, visionary thinking",
+      follow_up: "What misconceptions would you most want to address?",
+      cultural_bridge: "This is exactly what we'll work on together!"
     }
   ]
 };
