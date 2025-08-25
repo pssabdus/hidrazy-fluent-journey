@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { RaziaConversationInterface } from '@/components/conversation/RaziaConversationInterface';
 import ComprehensiveProgressDashboard from '@/components/progress/ComprehensiveProgressDashboard';
+import IntelligentProgressDashboard from '@/components/progress/IntelligentProgressDashboard';
 import { AILessonInterface } from '@/components/lesson/AILessonInterface';
 import { StealthAssessmentInterface } from '@/components/assessment/StealthAssessmentInterface';
 import { AITeachingService, type LessonContext } from '@/services/AITeachingService';
@@ -323,7 +324,7 @@ export function SimplifiedDashboard() {
             ← Back to Dashboard
           </Button>
         </div>
-        <ComprehensiveProgressDashboard userId={user?.id || ''} />
+        <IntelligentProgressDashboard userId={user?.id || ''} />
       </div>
     );
   }
