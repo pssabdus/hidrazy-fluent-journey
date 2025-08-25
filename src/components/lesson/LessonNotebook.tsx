@@ -315,8 +315,8 @@ export function LessonNotebook({
                           </div>
                         ))}
                       </div>
-                    </Card>
-                  )}
+                    </CardContent>
+                  </Card>
                 )}
 
                 {/* Corrections Section */}
@@ -347,8 +347,8 @@ export function LessonNotebook({
                           </div>
                         ))}
                       </div>
-                    </Card>
-                  )}
+                    </CardContent>
+                  </Card>
                 )}
               </motion.div>
 

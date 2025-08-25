@@ -777,6 +777,54 @@ export type Database = {
           },
         ]
       }
+      lesson_notebooks: {
+        Row: {
+          achievements_json: Json | null
+          auto_notes: string | null
+          corrections_json: Json | null
+          created_at: string
+          cultural_moments_json: Json | null
+          id: string
+          lesson_id: string
+          lesson_title: string
+          personal_notes: string | null
+          practice_guidance: string | null
+          updated_at: string
+          user_id: string | null
+          vocabulary_json: Json | null
+        }
+        Insert: {
+          achievements_json?: Json | null
+          auto_notes?: string | null
+          corrections_json?: Json | null
+          created_at?: string
+          cultural_moments_json?: Json | null
+          id?: string
+          lesson_id: string
+          lesson_title: string
+          personal_notes?: string | null
+          practice_guidance?: string | null
+          updated_at?: string
+          user_id?: string | null
+          vocabulary_json?: Json | null
+        }
+        Update: {
+          achievements_json?: Json | null
+          auto_notes?: string | null
+          corrections_json?: Json | null
+          created_at?: string
+          cultural_moments_json?: Json | null
+          id?: string
+          lesson_id?: string
+          lesson_title?: string
+          personal_notes?: string | null
+          practice_guidance?: string | null
+          updated_at?: string
+          user_id?: string | null
+          vocabulary_json?: Json | null
+        }
+        Relationships: []
+      }
       lesson_progress: {
         Row: {
           adapted_content: Json | null

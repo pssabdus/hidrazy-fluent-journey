@@ -3,11 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { LessonHeader } from './LessonHeader';
 import { RaziaAvatar, ChatBubble, VoiceControls, ChatMessage } from './RaziaChat';
 import { AudioPlayer } from './AudioPlayer';
+import { LessonNotebook } from './LessonNotebook';
+import { NotificationBulb } from './NotificationBulb';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
@@ -79,6 +82,8 @@ export function LessonInterface({
   const [isRaziaThinking, setIsRaziaThinking] = useState(false);
   const [currentPlayingAudio, setCurrentPlayingAudio] = useState<string | null>(null);
   const [textInput, setTextInput] = useState('');
+  const [activeTab, setActiveTab] = useState('conversation');
+  const [hasNewNotes, setHasNewNotes] = useState(false);
   
   const chatScrollRef = useRef<HTMLDivElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -266,8 +271,9 @@ export function LessonInterface({
         playAudio(audioData.audioUrl);
       }
 
-      // Add system message if there are corrections
+      // Add system message if there are corrections and show notification
       if (aiResponse.analysis?.grammar_errors && aiResponse.analysis.grammar_errors.length > 0) {
+        setHasNewNotes(true);
         setTimeout(() => {
           const systemMessage: ChatMessage = {
             id: (Date.now() + 1).toString(),
@@ -276,6 +282,8 @@ export function LessonInterface({
             timestamp: Date.now() + 1
           };
           setMessages(prev => [...prev, systemMessage]);
+          // Hide notification after 3 seconds
+          setTimeout(() => setHasNewNotes(false), 3000);
         }, 1000);
       }
 
@@ -453,77 +461,115 @@ Waiter: Excellent choice! I'll give you a few minutes to look over the menu."
 
         {/* Razia Chat Interface - Right Side (40%) */}
         <div className="w-2/5 bg-white border-l border-gray-200 flex flex-col">
-          {/* Chat Header */}
-          <div className="p-4 border-b border-gray-200 text-center">
-            <RaziaAvatar
-              isThinking={isRaziaThinking}
-              isSpeaking={isRaziaSpeaking}
-              emotion={isRaziaThinking ? 'thinking' : isRaziaSpeaking ? 'neutral' : 'encouraging'}
-            />
-            <h3 className="font-medium text-gray-900">Razia</h3>
-            <p className="text-sm text-gray-600">Your English Teacher</p>
-            {(isRaziaThinking || isRaziaSpeaking) && (
-              <motion.div
-                animate={{ opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-                className="mt-2"
-              >
-                <Badge variant="outline" className="text-xs">
-                  {isRaziaThinking ? 'Thinking...' : 'Speaking...'}
-                </Badge>
-              </motion.div>
-            )}
-          </div>
-
-          {/* Chat Messages */}
-          <ScrollArea className="flex-1 p-4" ref={chatScrollRef}>
-            <div className="space-y-4">
-              <AnimatePresence>
-                {messages.map((message) => (
-                  <ChatBubble
-                    key={message.id}
-                    message={message}
-                    onPlayAudio={playAudio}
-                    isPlaying={currentPlayingAudio === message.audioUrl}
-                  />
-                ))}
-              </AnimatePresence>
+          {/* Tab Navigation */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+            <div className="border-b border-gray-200">
+              <TabsList className="grid w-full grid-cols-3 h-12 bg-gray-50">
+                <TabsTrigger value="conversation" className="text-sm">
+                  💬 Conversation
+                </TabsTrigger>
+                <TabsTrigger value="voice" className="text-sm">
+                  🎤 Voice Chat
+                </TabsTrigger>
+                <TabsTrigger value="notes" className="text-sm relative">
+                  📓 My Notes
+                  {hasNewNotes && (
+                    <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
+                  )}
+                </TabsTrigger>
+              </TabsList>
             </div>
-          </ScrollArea>
 
-          {/* Text Input */}
-          <div className="p-4 border-t border-gray-200">
-            <div className="space-y-3">
-              <Textarea
-                value={textInput}
-                onChange={(e) => setTextInput(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Type your message or use voice..."
-                rows={2}
-                className="resize-none"
-              />
-              <div className="flex justify-between items-center">
-                <Button
-                  onClick={sendTextMessage}
-                  disabled={!textInput.trim() || isProcessing}
-                  size="sm"
-                >
-                  Send Message
-                </Button>
-                <div className="text-xs text-gray-500">
-                  Press Enter to send
+            <TabsContent value="conversation" className="flex-1 flex flex-col m-0">
+              {/* Chat Header */}
+              <div className="p-4 border-b border-gray-200 text-center">
+                <RaziaAvatar
+                  isThinking={isRaziaThinking}
+                  isSpeaking={isRaziaSpeaking}
+                  emotion={isRaziaThinking ? 'thinking' : isRaziaSpeaking ? 'neutral' : 'encouraging'}
+                />
+                <h3 className="font-medium text-gray-900">Razia</h3>
+                <p className="text-sm text-gray-600">Your English Teacher</p>
+                {(isRaziaThinking || isRaziaSpeaking) && (
+                  <motion.div
+                    animate={{ opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                    className="mt-2"
+                  >
+                    <Badge variant="outline" className="text-xs">
+                      {isRaziaThinking ? 'Thinking...' : 'Speaking...'}
+                    </Badge>
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Chat Messages */}
+              <ScrollArea className="flex-1 p-4" ref={chatScrollRef}>
+                <div className="space-y-4">
+                  <AnimatePresence>
+                    {messages.map((message, index) => (
+                      <div key={message.id} className="relative">
+                        <ChatBubble
+                          message={message}
+                          onPlayAudio={playAudio}
+                          isPlaying={currentPlayingAudio === message.audioUrl}
+                        />
+                        {/* Show notification bulb if message has corrections */}
+                        {message.type === 'user' && message.corrections && message.corrections.length > 0 && (
+                          <NotificationBulb show={hasNewNotes && index === messages.length - 2} />
+                        )}
+                      </div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              </ScrollArea>
+
+              {/* Text Input */}
+              <div className="p-4 border-t border-gray-200">
+                <div className="space-y-3">
+                  <Textarea
+                    value={textInput}
+                    onChange={(e) => setTextInput(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder="Type your message or use voice..."
+                    rows={2}
+                    className="resize-none"
+                  />
+                  <div className="flex justify-between items-center">
+                    <Button
+                      onClick={sendTextMessage}
+                      disabled={!textInput.trim() || isProcessing}
+                      size="sm"
+                    >
+                      Send Message
+                    </Button>
+                    <VoiceControls
+                      isRecording={isRecording}
+                      onStartRecording={startRecording}
+                      onStopRecording={stopRecording}
+                      isProcessing={isProcessing}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </TabsContent>
 
-          {/* Voice Controls */}
-          <VoiceControls
-            isRecording={isRecording}
-            onStartRecording={startRecording}
-            onStopRecording={stopRecording}
-            isProcessing={isProcessing}
-          />
+            <TabsContent value="voice" className="flex-1 flex flex-col m-0">
+              <div className="p-8 text-center">
+                <p className="text-muted-foreground">Voice chat interface - coming soon!</p>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="notes" className="flex-1 flex flex-col m-0">
+              <LessonNotebook
+                lessonId={lessonId}
+                lessonTitle={title}
+                conversationHistory={messages}
+                userLevel="intermediate"
+                onNewNotesGenerated={() => setHasNewNotes(false)}
+              />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>
