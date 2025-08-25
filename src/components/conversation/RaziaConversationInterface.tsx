@@ -8,6 +8,8 @@ import { Mic, MicOff, Send, Volume2, VolumeX, Phone } from 'lucide-react';
 import { useConversation } from '@/contexts/ConversationContext';
 import VoiceInterface from './VoiceInterface';
 import { RaziaWelcomeMessage } from './RaziaWelcomeMessage';
+import { LessonNotebook } from '@/components/lesson/LessonNotebook';
+import { NotificationBulb } from '@/components/lesson/NotificationBulb';
 
 interface RaziaConversationInterfaceProps {
   conversationType?: string;
@@ -20,6 +22,7 @@ export function RaziaConversationInterface({
 }: RaziaConversationInterfaceProps) {
   const [textInput, setTextInput] = useState('');
   const [activeTab, setActiveTab] = useState('text');
+  const [hasNewNotes, setHasNewNotes] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const {
@@ -49,6 +52,16 @@ export function RaziaConversationInterface({
     
     await sendMessage(textInput.trim());
     setTextInput('');
+    
+    // Check if the response has corrections and show notification
+    setTimeout(() => {
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage?.analysis?.grammar_corrections?.length > 0) {
+        setHasNewNotes(true);
+        // Hide notification after 3 seconds
+        setTimeout(() => setHasNewNotes(false), 3000);
+      }
+    }, 1000);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -106,14 +119,20 @@ export function RaziaConversationInterface({
       {/* Mode Selector */}
       <div className="p-4 border-b border-border bg-muted/30">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="text" className="flex items-center gap-2">
               <Send className="h-4 w-4" />
-              Text Chat
+              💬 Text Chat
             </TabsTrigger>
             <TabsTrigger value="voice" className="flex items-center gap-2">
               <Phone className="h-4 w-4" />
-              Voice Chat
+              🎤 Voice Chat
+            </TabsTrigger>
+            <TabsTrigger value="notes" className="flex items-center gap-2 relative">
+              📓 My Notes
+              {hasNewNotes && (
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+              )}
             </TabsTrigger>
           </TabsList>
           
@@ -136,12 +155,12 @@ export function RaziaConversationInterface({
                       </div>
                     </div>
                   ) : (
-                    messages.map((message) => (
+                    messages.map((message, index) => (
                       <div
                         key={message.id}
                         className={`flex ${
                           message.type === 'user' ? 'justify-end' : 'justify-start'
-                        }`}
+                        } relative`}
                       >
                         <Card className={`max-w-[80%] p-4 ${
                           message.type === 'user' 
@@ -174,6 +193,14 @@ export function RaziaConversationInterface({
                             </div>
                           </div>
                         </Card>
+                        
+                        {/* Show notification bulb if message has corrections */}
+                        {message.type === 'user' && message.analysis?.grammar_corrections && message.analysis.grammar_corrections.length > 0 && (
+                          <NotificationBulb 
+                            show={hasNewNotes && index === messages.length - 2} 
+                            message="Notes added to notebook!"
+                          />
+                        )}
                       </div>
                     ))
                   )}
@@ -256,6 +283,19 @@ export function RaziaConversationInterface({
               <VoiceInterface 
                 conversationType={conversationType}
                 userLevel="beginner"
+              />
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="notes" className="mt-4">
+            {/* Lesson Notebook Interface */}
+            <div className="min-h-[500px]">
+              <LessonNotebook
+                lessonId={`conversation-${Date.now()}`}
+                lessonTitle="English Conversation Practice"
+                conversationHistory={messages}
+                userLevel="intermediate"
+                onNewNotesGenerated={() => setHasNewNotes(false)}
               />
             </div>
           </TabsContent>
