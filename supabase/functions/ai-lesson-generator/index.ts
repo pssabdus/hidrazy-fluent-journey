@@ -164,9 +164,9 @@ serve(async (req) => {
   }
 
   try {
-    const { user_id, category = 'general', lesson_context = {} } = await req.json();
+    const { user_id, category = 'general', lesson_context = {}, custom_prompt } = await req.json();
 
-    console.log('Generating AI lesson for user:', user_id, 'category:', category);
+    console.log('Generating AI lesson for user:', user_id, 'category:', category, 'custom:', !!custom_prompt);
 
     // Fetch comprehensive user profile
     const { data: userData, error: userError } = await supabase
@@ -242,10 +242,10 @@ serve(async (req) => {
       business_objectives: ['presentations', 'email communication']
     };
 
-    // Generate the master teaching prompt
-    const teachingPrompt = generateMasterTeachingPrompt(userProfile, lesson_context, category);
+    // Use custom prompt if provided, otherwise generate the master teaching prompt
+    const finalPrompt = custom_prompt || generateMasterTeachingPrompt(userProfile, lesson_context, category);
 
-    console.log('Generated teaching prompt length:', teachingPrompt.length);
+    console.log('Using prompt type:', custom_prompt ? 'custom' : 'generated', 'length:', finalPrompt.length);
 
     // Call OpenAI with the comprehensive prompt
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -261,7 +261,7 @@ serve(async (req) => {
             role: 'system', 
             content: 'You are Razia, an expert English teacher for Arabic speakers. Create detailed, culturally-sensitive lesson plans that build confidence and fluency.' 
           },
-          { role: 'user', content: teachingPrompt }
+          { role: 'user', content: finalPrompt }
         ],
         max_tokens: 2000,
         temperature: 0.7,
