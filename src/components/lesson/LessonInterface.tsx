@@ -565,7 +565,7 @@ Waiter: Excellent choice! I'll give you a few minutes to look over the menu."
                 lessonId={lessonId}
                 lessonTitle={title}
                 conversationHistory={messages}
-                userLevel="intermediate"
+                userLevel={difficulty || "intermediate"}
                 onNewNotesGenerated={() => setHasNewNotes(false)}
               />
             </TabsContent>
