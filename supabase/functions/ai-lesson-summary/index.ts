@@ -114,6 +114,10 @@ Use encouraging, warm tone. Keep it simple and actionable. Include "mashallah" o
     const structuredCorrections = await extractCorrections(corrections);
     const achievements = await extractAchievements(conversationText, userLevel);
     const culturalMoments = await extractCulturalMoments(conversationText);
+    
+    // Generate Arabic explanations for 12-year-olds
+    const arabicExplanation = await generateArabicExplanation(conversationText, lessonTitle, userLevel);
+    const practiceGuidanceArabic = await generateArabicPracticeGuidance(lessonTitle, userLevel);
 
     return new Response(JSON.stringify({
       summary,
@@ -121,7 +125,9 @@ Use encouraging, warm tone. Keep it simple and actionable. Include "mashallah" o
       corrections: structuredCorrections,
       achievements,
       culturalMoments,
-      practiceGuidance: `Continue practicing ${lessonTitle.toLowerCase()} conversations. Focus on using the new vocabulary words in daily situations. Remember to practice the corrected grammar patterns!`
+      practiceGuidance: `Continue practicing ${lessonTitle.toLowerCase()} conversations. Focus on using the new vocabulary words in daily situations. Remember to practice the corrected grammar patterns!`,
+      arabicExplanation,
+      practiceGuidanceArabic
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
@@ -151,14 +157,14 @@ async function extractVocabulary(conversationText: string, userLevel: string) {
         messages: [
           {
             role: 'system',
-            content: 'Extract new vocabulary words that a student at this level likely learned from this conversation. Return as JSON array with term, definition, and pronunciation.'
+            content: 'Extract new vocabulary words that a student at this level likely learned from this conversation. Include Arabic translations to help Arabic speakers understand better.'
           },
           {
             role: 'user',
-            content: `Level: ${userLevel}\nConversation: ${conversationText}\n\nExtract 3-5 key vocabulary words in JSON format: [{"term": "word", "definition": "simple definition", "pronunciation": "phonetic", "exampleSentence": "example"}]`
+            content: `Level: ${userLevel}\nConversation: ${conversationText}\n\nExtract 3-5 key vocabulary words in JSON format: [{"term": "word", "definition": "simple definition", "pronunciation": "phonetic", "exampleSentence": "example", "arabicTranslation": "الترجمة العربية", "arabicExample": "مثال بالعربية"}]`
           }
         ],
-        max_tokens: 300,
+        max_tokens: 500,
         temperature: 0.3,
       }),
     });
@@ -174,6 +180,88 @@ async function extractVocabulary(conversationText: string, userLevel: string) {
     return [];
   } catch {
     return [];
+  }
+}
+
+async function generateArabicExplanation(conversationText: string, lessonTitle: string, userLevel: string) {
+  try {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: `You are explaining English lessons to a 12-year-old Arabic speaker. Use simple, clear Arabic that a child would understand. Be encouraging and use child-friendly examples from daily life.`
+          },
+          {
+            role: 'user',
+            content: `Explain this English lesson "${lessonTitle}" and what was practiced in this conversation in Arabic, as if talking to a 12-year-old child. Make it fun and relatable:
+
+Conversation: ${conversationText}
+
+Write a short, encouraging explanation (max 3-4 sentences) in Arabic that:
+1. Explains what they learned in simple terms
+2. Connects it to their daily life 
+3. Encourages them to keep practicing
+4. Uses examples a 12-year-old would understand
+
+Keep it warm, simple, and motivating!`
+          }
+        ],
+        max_tokens: 300,
+        temperature: 0.7,
+      }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data.choices[0].message.content;
+    }
+    return "أحسنت! لقد تعلمت اليوم كلمات وجمل جديدة باللغة الإنجليزية. استمر في الممارسة وستصبح أفضل كل يوم!";
+  } catch {
+    return "أحسنت! لقد تعلمت اليوم كلمات وجمل جديدة باللغة الإنجليزية. استمر في الممارسة وستصبح أفضل كل يوم!";
+  }
+}
+
+async function generateArabicPracticeGuidance(lessonTitle: string, userLevel: string) {
+  try {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: `Give practice advice in Arabic for a 12-year-old learning English. Use simple, encouraging language that a child would understand and find motivating.`
+          },
+          {
+            role: 'user',
+            content: `Give practice advice in Arabic for someone learning "${lessonTitle}" at ${userLevel} level. Write as if talking to a 12-year-old child - make it fun, simple, and actionable. Include specific activities they can do at home or with family.
+
+Keep it 2-3 sentences maximum, use encouraging words, and make it feel like a game or fun activity rather than homework.`
+          }
+        ],
+        max_tokens: 200,
+        temperature: 0.7,
+      }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data.choices[0].message.content;
+    }
+    return "جرب أن تتحدث باللغة الإنجليزية مع أصدقائك أو عائلتك كل يوم لمدة ١٠ دقائق. اجعلها لعبة ممتعة!";
+  } catch {
+    return "جرب أن تتحدث باللغة الإنجليزية مع أصدقائك أو عائلتك كل يوم لمدة ١٠ دقائق. اجعلها لعبة ممتعة!";
   }
 }
 

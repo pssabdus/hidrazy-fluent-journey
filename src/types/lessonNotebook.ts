@@ -4,6 +4,8 @@ export interface VocabularyEntry {
   definition: string;
   pronunciation: string;
   exampleSentence?: string;
+  arabicTranslation?: string;
+  arabicExample?: string;
 }
 
 export interface Correction {
@@ -24,6 +26,8 @@ export interface LessonNotebook {
   achievements: string[];
   culturalMoments: string[];
   practiceGuidance: string;
+  arabicExplanation?: string;
+  practiceGuidanceArabic?: string;
 }
 
 // Database response interface (matches Supabase schema)

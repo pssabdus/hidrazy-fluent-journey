@@ -68,7 +68,9 @@ export function LessonNotebook({
           corrections: (data.corrections_json as any) || [],
           achievements: (data.achievements_json as any) || [],
           culturalMoments: (data.cultural_moments_json as any) || [],
-          practiceGuidance: data.practice_guidance || ''
+          practiceGuidance: data.practice_guidance || '',
+          arabicExplanation: data.arabic_explanation || '',
+          practiceGuidanceArabic: data.practice_guidance_arabic || ''
         };
         
         setNotebook(notebookData);
@@ -105,7 +107,9 @@ export function LessonNotebook({
         corrections: data.corrections || [],
         achievements: data.achievements || [],
         culturalMoments: data.culturalMoments || [],
-        practiceGuidance: data.practiceGuidance || ''
+        practiceGuidance: data.practiceGuidance || '',
+        arabicExplanation: data.arabicExplanation || '',
+        practiceGuidanceArabic: data.practiceGuidanceArabic || ''
       };
 
       setNotebook(newNotebook);
