@@ -107,6 +107,45 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_usage_logs: {
+        Row: {
+          conversation_id: string | null
+          created_at: string
+          estimated_cost: number | null
+          id: string
+          input_tokens: number | null
+          model_used: string
+          output_tokens: number | null
+          request_type: string | null
+          timestamp: string
+          user_id: string
+        }
+        Insert: {
+          conversation_id?: string | null
+          created_at?: string
+          estimated_cost?: number | null
+          id?: string
+          input_tokens?: number | null
+          model_used: string
+          output_tokens?: number | null
+          request_type?: string | null
+          timestamp?: string
+          user_id: string
+        }
+        Update: {
+          conversation_id?: string | null
+          created_at?: string
+          estimated_cost?: number | null
+          id?: string
+          input_tokens?: number | null
+          model_used?: string
+          output_tokens?: number | null
+          request_type?: string | null
+          timestamp?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       analytics_events: {
         Row: {
           created_at: string
@@ -1433,6 +1472,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_old_ai_usage_logs: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       create_admin_user: {
         Args: { admin_email: string }
         Returns: undefined

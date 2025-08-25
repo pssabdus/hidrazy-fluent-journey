@@ -265,7 +265,7 @@ export function RaziaConversationInterface({
                     </Button>
                   </div>
                   
-                  <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
+                  <div className="flex items-center justify-between mt-2 text-xs">
                     <span>
                       {isListening ? 'Listening...' : 'Press Enter to send, or use voice input'}
                     </span>
@@ -276,6 +276,28 @@ export function RaziaConversationInterface({
                         <span>Razia speaking...</span>
                       </div>
                     )}
+                    
+                    {/* Cost-Conscious Settings */}
+                    <div className="flex items-center gap-2">
+                      <label className="flex items-center gap-1 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          checked={userPreferences.autoTTS}
+                          onChange={(e) => setUserPreferences(prev => ({ ...prev, autoTTS: e.target.checked }))}
+                          className="w-3 h-3"
+                        />
+                        🔊 Auto-audio
+                      </label>
+                      <label className="flex items-center gap-1 cursor-pointer text-purple-600">
+                        <input 
+                          type="checkbox" 
+                          checked={userPreferences.smartMode}
+                          onChange={(e) => setUserPreferences(prev => ({ ...prev, smartMode: e.target.checked }))}
+                          className="w-3 h-3"
+                        />
+                        🧠 Smart mode
+                      </label>
+                    </div>
                   </div>
                 </div>
               )}
@@ -285,9 +307,11 @@ export function RaziaConversationInterface({
           <TabsContent value="voice" className="mt-4">
             {/* Voice Chat Interface */}
             <div className="min-h-[500px]">
-              <VoiceInterface 
-                conversationType={conversationType}
-                userLevel="beginner"
+              <CostOptimizedVoiceInterface
+                onUpgradeClick={() => {
+                  // Handle upgrade/notification signup
+                  console.log('User interested in premium voice features');
+                }}
               />
             </div>
           </TabsContent>
