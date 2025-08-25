@@ -220,7 +220,11 @@ async function getConversationHistory(supabase: any, userId: string, conversatio
 async function generateRaziaResponse({ userMessage, userContext, conversationHistory, conversationType, isVoice, options, openaiApiKey }: any) {
   console.log('[RAZIA-CONVERSATION] Generating AI response with context');
   
-  const systemPrompt = createAdvancedRaziaPrompt(userContext, conversationType, isVoice, options);
+  // Detect language and adapt response strategy
+  const languageAnalysis = detectUserLanguage(userMessage);
+  console.log('[LANGUAGE-DETECTION]', languageAnalysis);
+  
+  const systemPrompt = createAdvancedRaziaPrompt(userContext, conversationType, isVoice, options, languageAnalysis);
   const conversationContext = buildConversationContext(conversationHistory);
   
   const messages = [
@@ -277,7 +281,7 @@ async function generateRaziaResponse({ userMessage, userContext, conversationHis
 }
 
 // Create advanced Razia system prompt with full AI training integration
-function createAdvancedRaziaPrompt(userContext: any, conversationType: string, isVoice: boolean, options: any) {
+function createAdvancedRaziaPrompt(userContext: any, conversationType: string, isVoice: boolean, options: any, languageAnalysis?: any) {
   const { userLevel, learningGoal, country, progress, personalization } = userContext;
   
   const basePersonality = `You are Razia, a warm and enthusiastic English conversation partner specifically designed for Arabic speakers. You have these key traits:
@@ -304,6 +308,12 @@ CULTURAL AWARENESS:
 - Respect cultural values while encouraging English growth
 - Bridge cultural gaps with "In your culture... in English-speaking countries..."
 
+MULTILINGUAL INTELLIGENCE:
+- You can understand both Arabic and English
+- When users write in Arabic, acknowledge it and bridge to English learning
+- Use Arabic phrases to show cultural connection but always teach English equivalents
+- Help translate concepts between Arabic and English thinking patterns
+
 Remember: Your goal is to make English learning feel natural, enjoyable, and culturally respectful. Never make learners feel ashamed of their accent or mistakes.`;
 
   const levelAdaptation = getLevelAdaptationStrategy(userLevel);
@@ -311,6 +321,7 @@ Remember: Your goal is to make English learning feel natural, enjoyable, and cul
   const errorCorrectionStrategy = getErrorCorrectionStrategy(personalization?.correction_style_preference);
   const conversationTypePrompt = getConversationTypePrompt(conversationType, learningGoal);
   const emotionalIntelligence = getEmotionalIntelligencePrompt(userContext);
+  const languageGuidance = getLanguageResponseGuidance(languageAnalysis);
 
   return `${basePersonality}
 
@@ -332,6 +343,8 @@ ${conversationTypePrompt}
 
 ${emotionalIntelligence}
 
+${languageGuidance}
+
 CONVERSATION MODE: ${isVoice ? 'Voice conversation - keep responses concise but warm' : 'Text conversation - can be more detailed'}
 
 RESPONSE GUIDELINES:
@@ -345,6 +358,7 @@ RESPONSE GUIDELINES:
 8. Keep responses natural and conversational, like talking to a supportive friend
 9. Make English learning feel natural, enjoyable, and culturally respectful
 10. Never make learners feel ashamed of their accent or mistakes
+11. When users write in Arabic, acknowledge and bridge to English learning opportunities
 
 Remember: Your goal is not just to teach English, but to build confidence, bridge cultures, and create an enjoyable learning experience that motivates continued practice.`;
 }
@@ -699,6 +713,76 @@ async function generateFollowUpRecommendations(supabase: any, userId: string, an
   }
   
   return recommendations;
+}
+
+// Language detection and multilingual support functions
+function detectUserLanguage(message: string) {
+  // Arabic script detection (basic Unicode range check)
+  const arabicRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+  const hasArabicScript = arabicRegex.test(message);
+  
+  // Common Arabic words/phrases detection
+  const arabicPhrases = /\b(السلام عليكم|وعليكم السلام|كيف حالك|الحمد لله|إن شاء الله|ما شاء الله|سبحان الله|أهلا وسهلا|شكرا|أريد|أحتاج|هل يمكن|لا أفهم)\b/g;
+  const arabicPhraseMatches = message.match(arabicPhrases) || [];
+  
+  // English detection
+  const englishWords = /\b(the|and|or|but|is|are|was|were|have|has|had|do|does|did|will|would|can|could|should|may|might|must|I|you|he|she|it|we|they|this|that|these|those)\b/gi;
+  const englishMatches = message.match(englishWords) || [];
+  
+  // Mixed language patterns
+  const isMixed = hasArabicScript && englishMatches.length > 0;
+  
+  const analysis = {
+    hasArabic: hasArabicScript,
+    arabicPhraseCount: arabicPhraseMatches.length,
+    englishWordCount: englishMatches.length,
+    isMixed: isMixed,
+    primaryLanguage: hasArabicScript && englishMatches.length === 0 ? 'arabic' : 
+                     !hasArabicScript && englishMatches.length > 2 ? 'english' : 'mixed',
+    confidence: hasArabicScript || englishMatches.length > 2 ? 'high' : 'medium'
+  };
+  
+  console.log('[LANGUAGE-DETECTION] Analysis:', analysis);
+  return analysis;
+}
+
+function getLanguageResponseGuidance(languageAnalysis?: any) {
+  if (!languageAnalysis) return '';
+  
+  const { primaryLanguage, hasArabic, isMixed, arabicPhraseCount } = languageAnalysis;
+  
+  if (primaryLanguage === 'arabic') {
+    return `ARABIC INPUT DETECTED:
+- The user wrote primarily in Arabic - acknowledge this respectfully
+- Respond with: "I see you're writing in Arabic, habibi! 😊 That's totally fine - I understand Arabic. Let me help you practice English..."
+- Provide English translations of their Arabic message
+- Bridge their Arabic thoughts to English expressions
+- Encourage them by saying "Your Arabic is beautiful, now let's explore how to say this in English!"
+- Use this as a teaching moment to show equivalent English phrases
+- Be extra encouraging since they may be less confident in English`;
+  }
+  
+  if (isMixed) {
+    return `MIXED LANGUAGE DETECTED:
+- User is code-switching between Arabic and English (very natural for bilingual speakers!)
+- Acknowledge both languages: "I love how you're mixing Arabic and English - that shows you're thinking bilingually!"
+- Focus on the English parts and gently encourage more English
+- Use Arabic phrases they included to build rapport
+- Help translate the Arabic parts to English as teaching opportunities`;
+  }
+  
+  if (hasArabic && arabicPhraseCount > 0) {
+    return `ARABIC PHRASES DETECTED:
+- User included some Arabic expressions while writing mainly in English
+- Acknowledge and celebrate: "Mashallah, I love when you include Arabic expressions!"
+- Connect their Arabic phrases to English equivalents
+- Show cultural appreciation for their bilingual expression`;
+  }
+  
+  return `ENGLISH INPUT:
+- User is writing in English - encourage and support their English use
+- Continue normal English teaching conversation
+- Look for opportunities to include relevant Arabic cultural connections`;
 }
 
 // Helper functions for personality adaptation
