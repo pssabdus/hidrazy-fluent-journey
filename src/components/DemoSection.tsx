@@ -1,5 +1,5 @@
 import { Play, Star } from 'lucide-react';
-import videoDemo from '@/assets/video-demo.png';
+import raziaChatDemo from '@/assets/razia-chat-demo.jpg';
 
 const DemoSection = () => {
   const testimonials = [
@@ -49,26 +49,41 @@ const DemoSection = () => {
             <div className="glass rounded-3xl overflow-hidden shadow-card">
               <div className="relative">
                 <img 
-                  src={videoDemo}
-                  alt="Hidrazy demo video"
-                  className="w-full h-auto"
+                  src={raziaChatDemo}
+                  alt="Razia AI conversation interface demo showing cultural intelligence and smart English teaching"
+                  className="w-full h-auto rounded-2xl"
                 />
                 
-                {/* Play Button Overlay */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <button className="group w-24 h-24 bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center hover:bg-white/30 hover:scale-110 transition-all duration-300 shadow-glow">
-                    <Play className="w-10 h-10 text-white ml-1 group-hover:scale-110 transition-transform duration-300" />
-                  </button>
+                {/* Feature Highlights Overlay */}
+                <div className="absolute top-4 left-4">
+                  <div className="glass rounded-lg p-3">
+                    <p className="text-white text-sm font-medium">🧠 Cultural Intelligence</p>
+                  </div>
                 </div>
                 
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                <div className="absolute top-4 right-4">
+                  <div className="glass rounded-lg p-3">
+                    <p className="text-white text-sm font-medium">🎯 Smart Cost Optimization</p>
+                  </div>
+                </div>
+                
+                <div className="absolute bottom-4 left-4">
+                  <div className="glass rounded-lg p-3">
+                    <p className="text-white text-sm font-medium">🗣️ Voice + Text Learning</p>
+                  </div>
+                </div>
+                
+                <div className="absolute bottom-4 right-4">
+                  <div className="glass rounded-lg p-3">
+                    <p className="text-white text-sm font-medium">📊 Progress Tracking</p>
+                  </div>
+                </div>
               </div>
             </div>
             
             {/* Caption */}
             <p className="text-center text-gray-600 mt-6 text-lg">
-              See Razia in action - 2 minute demo
+              Experience Razia's Cultural Intelligence - Smart Arabic-English Bridge
             </p>
           </div>
         </div>

@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Play } from 'lucide-react';
 import { Button } from './ui/button';
-import conversationBubbles from '@/assets/conversation-bubbles.png';
+import conversationBubbles from '@/assets/conversation-bubbles-correct.jpg';
 
 const HeroSection = () => {
   const navigate = useNavigate();
@@ -75,13 +75,13 @@ const HeroSection = () => {
           {/* Additional floating elements */}
           <div className="absolute -top-4 -left-4 glass rounded-2xl p-4 animate-float">
             <p className="text-white text-sm">
-              <span className="text-primary-glow">EN:</span> "How do you say 'مرحبا' in English?"
+              <span className="text-primary-glow">USER:</span> "Teach me business phrases"
             </p>
           </div>
           
           <div className="absolute -bottom-4 -right-4 glass rounded-2xl p-4 animate-float" style={{ animationDelay: '1.5s' }}>
             <p className="text-white text-sm">
-              <span className="text-accent">AR:</span> "Hello! It means 'welcome' or 'hello'"
+              <span className="text-accent">RAZIA:</span> "Let me bridge Arabic culture with English business!"
             </p>
           </div>
         </div>
