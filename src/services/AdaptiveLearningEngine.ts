@@ -558,6 +558,14 @@ export class AdvancedAdaptiveLearningEngine {
     return 0.9;
   }
 
+  // ==============================
+  // DEPRECATED: Static Curriculum Recommendations
+  // ==============================
+  // This curriculum logic is now replaced by SmartTeachingEngine
+  // which uses AI to generate personalized learning paths
+  // TODO: Remove after full migration to AI system
+  // ==============================
+  
   // Curriculum Recommendation Methods
   public generateCurriculumRecommendations(): CurriculumRecommendation[] {
     const recommendations: CurriculumRecommendation[] = [];
@@ -1071,7 +1079,11 @@ export class AdvancedAdaptiveLearningEngine {
     return null;
   }
 
+  // ==============================
+  // DEPRECATED: Use SmartTeachingEngine.generateCompleteTeachingSession() instead
+  // ==============================
   public getPersonalizedRecommendations(): CurriculumRecommendation[] {
+    // TODO: Replace with SmartTeachingEngine AI-powered recommendations
     return this.personalizationAlgorithm.curriculumRecommendations;
   }
 

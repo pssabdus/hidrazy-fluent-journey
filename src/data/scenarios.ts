@@ -1,5 +1,14 @@
 import { Scenario } from '@/types/roleplay';
 
+// ==============================
+// DEPRECATED: Static Scenarios Data
+// ==============================
+// This static scenario data is now replaced by our AI-powered SmartTeachingEngine
+// which generates personalized, culturally-sensitive content dynamically.
+// Keeping for backward compatibility but should migrate to AI-generated scenarios.
+// TODO: Remove after full migration to AI system
+// ==============================
+
 export const scenarios: Scenario[] = [
   // Daily Life Scenarios
   {
@@ -315,10 +324,19 @@ export const scenarios: Scenario[] = [
   }
 ];
 
+// ==============================
+// DEPRECATED: Static Scenario Helpers  
+// ==============================
+// These functions are replaced by AI-generated content in SmartTeachingEngine
+// Use AIContentService.generateRolePlayScenario() instead
+// ==============================
+
 export const getScenariosByCategory = (category: string) => {
+  // TODO: Replace with AI-generated scenarios based on user profile and cultural context
   return scenarios.filter(scenario => scenario.category === category);
 };
 
 export const getScenarioById = (id: string) => {
+  // TODO: Replace with AI-generated scenario retrieval
   return scenarios.find(scenario => scenario.id === id);
 };
